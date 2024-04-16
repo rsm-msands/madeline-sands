@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Madeline Sands">
-<meta name="dcterms.date" content="2024-04-15">
+<meta name="dcterms.date" content="2024-04-16">
 
 <title>Madeline Sands - A Replication of Karlan and List (2007)</title>
 <style>
@@ -194,7 +194,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 15, 2024</p>
+      <p class="date">April 16, 2024</p>
     </div>
   </div>
   
@@ -214,7 +214,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
-<div id="f72fa0ed" class="cell" data-execution_count="1">
+<div id="5e6f86c5" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -223,7 +223,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
 <p>Below is the data from the Karlan et. al 2007 data. Of a sample of 50,083 individuals who have given to a charitable organization since 1991, they were randomized and assigned 67% into “match” treatment group and a 33% into control group. the “match” treatment group was offered a matching grant conditional on their donation. The database contains information about if the participant was placed in the treatment or control group, the ratio, the size of the donation, and some more characteristics of the subject.</p>
-<div id="3566410b" class="cell" data-execution_count="2">
+<div id="a239cdaa" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>karlan_df.info()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>karlan_df.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -286,7 +286,7 @@ Data columns (total 51 columns):
 dtypes: category(3), float32(16), float64(12), int16(4), int8(16)
 memory usage: 8.9 MB</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 <div>
 
@@ -758,7 +758,7 @@ Variable Definitions
 <p>As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.</p>
 <p>I have created a function called <code>t_test_calc</code> that calculates the t_stat and indicates if there is statistically signigicant difference between the variables in the treatment and test groups at a pre-determined confidence interval.</p>
 <p><em>todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. Do each as a t-test and separately as a linear regression, and confirm you get the exact same results from both methods. When doing a t-test, use the formula in the class slides. When doing the linear regression, regress for example mrm2 on treatment and look at the estimated coefficient on the treatment variable. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper).</em></p>
-<div id="fc61b0f7" class="cell" data-execution_count="3">
+<div id="e4ab062c" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> t_test_calc(data, treatment_col, control_col, outcome_col):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    treatment <span class="op">=</span> data[data[treatment_col] <span class="op">==</span> <span class="dv">1</span>]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    control <span class="op">=</span> data[data[control_col] <span class="op">==</span> <span class="dv">1</span>]</span>
@@ -772,7 +772,7 @@ Variable Definitions
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    t_stat <span class="op">=</span> diff_means <span class="op">/</span> np.sqrt((std_treatment<span class="op">**</span><span class="dv">2</span><span class="op">/</span>n_treatment) <span class="op">+</span> (std_control<span class="op">**</span><span class="dv">2</span><span class="op">/</span>n_control))</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t_stat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="c58a8c49" class="cell" data-execution_count="4">
+<div id="a4415659" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>karlan_df[<span class="st">"mrm2"</span>].fillna(<span class="dv">0</span>, inplace <span class="op">=</span> <span class="va">True</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Assuming data is a pandas DataFrame with columns 'outcome_variable', 'treatment', and 'other_variable'</span></span>
@@ -793,7 +793,7 @@ Variable Definitions
 Intercept: 12.99814226643495</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/bj/t618x2614s9c896326lrdjw40000gn/T/ipykernel_71092/93217094.py:2: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+<pre><code>/var/folders/bj/t618x2614s9c896326lrdjw40000gn/T/ipykernel_78792/93217094.py:2: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
 The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
 
 For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
@@ -807,7 +807,7 @@ For example, when doing 'df[col].method(value, inplace=True)', try using 'df.met
 <section id="charitable-contribution-made" class="level3">
 <h3 class="anchored" data-anchor-id="charitable-contribution-made">Charitable Contribution Made</h3>
 <p>First, I analyzed whether matched donations lead to an increased response rate of making a donation.</p>
-<div id="8dedeec2" class="cell" data-execution_count="5">
+<div id="e2ba89b4" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib <span class="im">as</span> plt</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> rcParams</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -832,7 +832,7 @@ For example, when doing 'df[col].method(value, inplace=True)', try using 'df.met
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-6-output-1.png" width="572" height="431" class="figure-img"></p>
+<p><img src="index_files/figure-html/cell-6-output-1.png" width="575" height="429" class="figure-img"></p>
 </figure>
 </div>
 </div>
