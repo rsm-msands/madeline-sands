@@ -1,0 +1,15 @@
+---
+title: "Madeline Sands"
+image: "files/profile_pic.jpg"
+about:
+    template: jolla
+
+    links:
+    - icon: envelope
+      href: mailto:m.h.sands2012@gmail.com
+    - icon: linkedin
+      href: https://www.linkedin.com/in/madeline-sands
+    
+---
+
+Welcome to my website!
