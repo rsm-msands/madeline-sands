@@ -6,10 +6,9 @@ callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
 ---
 
 ## Introduction
-
 Dean Karlan at Yale and John List at the University of Chicago conducted a field experiment to test the effectiveness of different fundraising letters. They sent out 50,000 fundraising letters to potential donors, randomly assigning each letter to one of three treatments: a standard letter, a matching grant letter, or a challenge grant letter. They published the results of this experiment in the _American Economic Review_ in 2007. The article and supporting data are available from the [AEA website](https://www.aeaweb.org/articles?id=10.1257/aer.97.5.1774) and from Innovations for Poverty Action as part of [Harvard's Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/27853&version=4.2).
 
-The goal of their project was to test the effectiveness of a matching grant on chartiable giving. Via their large-scale natural field experiment, they found that match offer increases both the charitable revenue per solicitation and the response rate to the letters. However, the larger amount of the match ratio, (i.e. $3:$1 and $2:$1), relative to a smaller match ratio, ($1:$1), had no additional impact on the revenue per solicitation nor the response rate. 
+The goal of their project was to test the effectiveness of a matching grant on chartiable giving. Via their large-scale natural field experiment, they found that providing a match offer increases both the charitable revenue per solicitation and the response rate to the letters. However, the larger amount of the match ratio, (i.e. $3:$1 and $2:$1), relative to a smaller match ratio, ($1:$1), had no additional impact on the revenue per solicitation nor the response rate to the letter. 
 
 This project seeks to replicate their results.
 
@@ -18,16 +17,16 @@ This project seeks to replicate their results.
 ```{python}
 import numpy as np 
 import pandas as pd 
+from scipy.stats import t
+from scipy.stats import ttest_ind
 
 karlan_df = pd.read_stata('data/karlan_list_2007.dta')
 ```
 
 ### Description
-
-Below is the data from the Karlan et. al 2007 data. Of a sample of 50,083 individuals who have given to a charitable organization since 1991, they were randomized and assigned 67% into "match" treatment group and a 33% into control group. the "match" treatment group was offered a matching grant conditional on their donation. The database contains information about if the participant was placed in the treatment or control group, the ratio, the size of the donation, and some more characteristics of the subject. 
+Below is a general overview of the data from Karlan et. al 2007. A sample of approximately 50,000 individuals who had given to a charitable organization since 1991 were randomized and assigned into either a "match" treatment group or a control group. The treatment group was offered a matching grant conditional on their donation, with the goal to see if the match rate increases the likelihood of a donation in a charitable setting. This dataset contains information such as if the participant was part of the treatment or control, the match ratio, and the size of the donation, in addition to further characteristics about the donor and the donation they made. 
 
 ```{python}
-karlan_df.info()
 karlan_df.describe()
 
 ```
@@ -93,11 +92,9 @@ karlan_df.describe()
 
 ### Balance Test 
 
-As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.
+As an ad hoc test of their randomization mechanism, I have provided a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically different from one another.
 
-I have created a function called `t_test_calc` that calculates the t_stat and indicates if there is statistically signigicant difference between the variables in the treatment and test groups at a pre-determined confidence interval. 
-
-_todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. Do each as a t-test and separately as a linear regression, and confirm you get the exact same results from both methods. When doing a t-test, use the formula in the class slides. When doing the linear regression, regress for example mrm2 on treatment and look at the estimated coefficient on the treatment variable. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper)._
+I have created a function called `t_test_calc` that calculates the t-statistic and the p-value to determine if there is a statistically signigicant difference between the variables in the treatment and test groups at a pre-determined confidence interval. 
 
 ```{python}
 def t_test_calc(data, treatment_col, control_col, outcome_col):
@@ -108,93 +105,293 @@ def t_test_calc(data, treatment_col, control_col, outcome_col):
     diff_means = mean_treatment - mean_control
     std_treatment = treatment[outcome_col].std()
     std_control = control[outcome_col].std()
-    n_treatment = len(treatment)
-    n_control = len(control)
+    n_treatment = treatment[outcome_col].count()
+    n_control = control[outcome_col].count()
     t_stat = diff_means / np.sqrt((std_treatment**2/n_treatment) + (std_control**2/n_control))
-    return t_stat
+
+    return t_stat, n_treatment, n_control
+### T-stat calculation for mrm2 Variable###
+t_stat_mrm2, n_treatment, n_control = t_test_calc(karlan_df, "treatment", "control", "mrm2")
+dof = n_treatment + n_control - 2
+
+p_value1 = (1 - t.cdf(np.abs(t_stat_mrm2), dof)) * 2
+
+print(f"t-stat calculated for mrm2: {t_stat_mrm2:.4f}")
+print(f"p-value calculated for mrm2: {p_value1:.4f}")
+
+### T-stat calculation for Freq Variable###
+t_stat_freq, n_treatment, n_control = t_test_calc(karlan_df, "treatment", "control", "freq")
+dof_freq = n_treatment + n_control - 2
+
+p_value_freq = (1 - t.cdf(np.abs(t_stat_freq), dof)) * 2
+
+print(f"t-stat calculated for freq: {t_stat_freq:.4f}")
+print(f"p-value calculated for freq:{p_value_freq:.4f}")
 ```
 
 ```{python}
+##Linear regression for mrm2 and Freq variables
 from sklearn.linear_model import LinearRegression
-karlan_df["mrm2"].fillna(0, inplace = True)
-# Assuming data is a pandas DataFrame with columns 'outcome_variable', 'treatment', and 'other_variable'
-X = karlan_df[['treatment']]  # Features
+karlan_df.fillna({"mrm2": 0}, inplace=True)
+
+X = karlan_df[['treatment']]  # Feature
 y = karlan_df['mrm2']  # Target variable
 
-# Create a linear regression model
 model = LinearRegression()
-
-# Fit the model to the data
 model.fit(X, y)
 
-# Print coefficients
-print('Coefficients:', model.coef_)
-print('Intercept:', model.intercept_)
+print('Coefficients for mrm2:', model.coef_)
+print('Intercept for mrm2:', model.intercept_)
 ```
 
-I believe that table 1 is included in the paper because of XXX. 
+Above, I have tested the variable `mrm2` & `freq` to see if there is a statistically significant difference between the treatment and control groups at a 95% confidence interval level. The variables `mrm2` and `freq` represent the _Number of Months since last donation_ and _the number of prior dontations_, respectively. Using the t-test-calc function, the calculated t-stat for `mrm2` is **0.1195** and the p-value is **0.9049**. This p-value is greater than the alpha value of 0.005, which means that we fail to reject the null hypothesis, and indicates that there is not enough evidence to conclude a statistically significant difference between the treatment and control groups when examining the number of months since their last donation, or the `mrm2` variable. 
+
+For the `freq` variable, the t_stat and p_value calculated were **-0.1108** and **0.9117**, respectively. The calculated p-value of 0.9117 is greater than the alpha value of 0.05, and we once again fail to reject the null hypothesis. This indicates that there is not enough evidence to indicate a statistically significant difference between the treatment and control groups when comparing the donation frequency. These values are similar to those included in table 1 of Karlan et al. I believe table 1 was included in the paper to show the sample statistics of the member activity, census demographics and the state-level activity of organization. 
+
 ## Experimental Results
 
 ### Charitable Contribution Made
 
 First, I analyzed whether matched donations lead to an increased response rate of making a donation. 
 
-
 ```{python}
 import matplotlib as plt
 from matplotlib import rcParams
 
-karlan_grouped = karlan_df.groupby(["treatment", "control"])["gave"].sum()
-
+karlan_df_copy = karlan_df.copy()
+karlan_grouped = karlan_df.groupby(["treatment", "control"])["gave"].mean()
 ax = karlan_grouped.plot(kind='bar', color = ["purple", "orange"])
 
 rcParams['font.family'] = 'serif'  # Change 'serif' to the desired font family
 rcParams['font.serif'] = ['Avenir'] 
+ax.set_xlabel("Treatment and Control")
+ax.set_ylabel("Proportion of People who Donated")
 
-#plt.xlabel("Treatment vs. Control group")
-#plt.ylabel('Number of people who Donated Money')
-#plt.title('Number of people who gave in treatment vs. control group')
+ax.set_title("Proportion of People who Donated in Treatment and Control")
 
 group_labels = ['Treatment', 'Control']
 ax.set_xticklabels(group_labels, rotation = 0)
 
 for i, v in enumerate(karlan_grouped):
-    ax.text(i, v + 0.1, str(v), ha='center', va='bottom')
-
-#plt.show()
+    ax.text(i, v, f'{v:.4f}', ha='center', va='bottom')
 ```
 
 
-_todo: run a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made. Also run a bivariate linear regression that demonstrates the same finding. (It may help to confirm your calculations match Table 2a Panel A.) Report your statistical results and interpret them in the context of the experiment (e.g., if you found a difference with a small p-value or that was statistically significant at some threshold, what have you learned about human behavior? Use mostly English words, not numbers or stats, to explain your finding.)_
-
+I also ran a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made, in addition to running a bivariate linear regression to demonstrate the same finding.
 
 ```{python}
+from scipy.stats import ttest_ind
+import scipy.stats as stats
+karlan_treatment = karlan_df[karlan_df["treatment"] == 1]
+karlan_control = karlan_df[karlan_df["control"] == 1]
+t_statistic, p_value = stats.ttest_ind(karlan_treatment["gave"], karlan_control["gave"])
+
+print("T-statistic:", t_statistic)
+print("p-value:", p_value)
+
+#Bivariate Linear regression on gave
+X = karlan_df[['treatment']]  # Features
+y = karlan_df['gave']  # Target variable
+
+model = LinearRegression()
+model.fit(X, y)
+
+print('Coefficients:', model.coef_)
+print('Intercept:', model.intercept_)
 
 ```
-_todo: run a probit regression where the outcome variable is whether any charitable donation was made and the explanatory variable is assignment to treatment or control. Confirm that your results replicate Table 3 column 1 in the paper._
 
+The output indicates a t-statistic of approximately **3.10** and a p-value of approximately **0.002**.
+
+In interpreting these results, it's important to recall that the t-statistic measures the size of the difference between the treatment and control groups relative to the variability in the data. Thus, the larger the t-statistic, the more the means of the two groups differ. In this case, a t-statistic of 3.10 suggests a substantial difference between the means of the treatment and control groups. 
+
+The p-value, on the other hand, assesses the probability of observing such a large difference if there were no true difference between the treatment and control groups (i.e., if the null hypothesis were true). A small p-value (in this case, 0.002) indicates that the observed difference is unlikely to have occurred by random chance alone. Interpreted in the context of the experiment, these statistical results suggest that there is a statistically significant difference in charitable giving between the treatment and control groups. In other words, the intervention or treatment likely had an effect on the behavior of individuals in the treatment group compared to those in the control group.
+
+Therefore, this finding may imply that the certain interventions or nudges implemented in the treatment group, the matching and challenge grant letters, were effective in encouraging charitable giving behavior. Understanding the effectiveness of these interventions sheds light on the psychological mechanisms and motivations behind charitable giving, potentially informing future strategies for promoting philanthropy and altruism.
+
+
+#### Probit Regression
+Next I ran a probit regression where the outcome variable is whether any charitable donation was made and the explanatory variable was assesment to treatment or control. 
+
+```{python}
+#Probit Regression
+import statsmodels.api as sm
+
+X = karlan_df[['treatment', 'control']]
+y = karlan_df['gave']
+
+model = sm.Probit(y, X).fit()
+
+print(model.summary())
+```
+
+Probit regression is a type of regression analysis used to model binary outcomes, similar to logistic regression. In probit regression, the relationship between the predictor variables and the binary outcome is modeled using the cumulative distribution function of the standard normal distribution (also known as the probit function). The model assumes that the linear combination of predictor variables is associated with the probability of the binary outcome. 
 
 ### Differences between Match Rates
 
-Next, I assess the effectiveness of different sizes of matched donations on the response rate.
+Next, I assessed the effectiveness of different sizes of matched donations on the response rate.
 
 _todo: Use a series of t-tests to test whether the size of the match ratio has an effect on whether people donate or not. For example, does the 2:1 match rate lead increase the likelihood that someone donates as compared to the 1:1 match rate? Do your results support the "figures suggest" comment the authors make on page 8?_
 
-_todo: Assess the same issue using a regression. Specifically, create the variable `ratio1` then regress `gave` on `ratio1`, `ratio2`, and `ratio3` (or alternatively, regress `gave` on the categorical variable `ratio`). Interpret the coefficients and their statistical precision._
+```{python}
+# T-test for ratio2 (2:1 match) compared to 1:1 match
+t_stat_ratio2, p_value_ratio2 = ttest_ind(karlan_df[karlan_df['ratio2'] == 1]['gave'], karlan_df[karlan_df['ratio2'] == 0]['gave'])
 
-_todo: Calculate the response rate difference between the 1:1 and 2:1 match ratios and the 2:1 and 3:1 ratios.  Do this directly from the data, and do it by computing the differences in the fitted coefficients of the previous regression. what do you conclude regarding the effectiveness of different sizes of matched donations?_
+# T-test for ratio3 (3:1 match) compared to 1:1 match
+t_stat_ratio3, p_value_ratio3 = ttest_ind(karlan_df[karlan_df['ratio3'] == 1]['gave'], karlan_df[karlan_df['ratio3'] == 0]['gave'])
 
+print("T-Test Results for 2:1 match ratio:")
+print(f"T-Statistic: {t_stat_ratio2}, P-Value: {p_value_ratio2}")
+
+print("\nT-Test Results for 3:1 match ratio:")
+print(f"T-Statistic: {t_stat_ratio3}, P-Value: {p_value_ratio3}")
+```
+
+
+Overall, based on these results, we do not have enough evidence to conclude that either the 2:1 match ratio or the 3:1 match ratio has a significantly different effect on charitable donations compared to the 1:1 match ratio. These findings match those of Karlan et al. They too found that "that neither the match threshold nor the example amount had a meaningful influence on behavior."
+
+
+```{python}
+import pyrsm as rsm
+
+reg_ratio = rsm.model.regress(
+    data = {"Karlan DF": karlan_df},
+    rvar = "gave",
+    evar = "ratio"
+)
+
+reg_ratio.summary()
+```
+
+In this regression, each ratio coefficient represents the effect of the corresponding ratio variable on charitable donations, holding other variables constant. Ratio[1]: The coefficient is positive (0.003), but it is not statistically significant at the 0.05 significance level (p = 0.097). Ratio[2]: The coefficient is positive (0.005) and statistically significant (p = 0.006), indicating that for each unit increase in ratio[2], charitable donations increase by 0.005 units, holding other variables constant. Ratio[3]: Similar to Ratio[2], the coefficient is positive (0.005) and statistically significant (p = 0.005), suggesting that for each unit increase in ratio[3], charitable donations increase by 0.005 units, holding other variables constant. The intercept represents the expected value of the dependent variable (charitable donations) when all explanatory variables (ratio) are zero. In this case, the intercept is statistically significant (p < 0.001), indicating that when the ratio is zero, there is still a non-zero expected value of charitable donations.
+
+The R-squared value (0.0) indicates that the model does not explain much of the variability in charitable donations. The F-statistic (3.665) tests the overall significance of the model. With a p-value of 0.012, the model is statistically significant, suggesting that at least one of the explanatory variables has a significant effect on charitable donations.
+
+Overall, the results suggest that ratio[2] and ratio[3] have a statistically significant positive effect on charitable donations, while ratio[1] does not have a statistically significant effect. However, it's essential to consider the context of the study and potential limitations when interpreting these findings.
+
+```{python}
+# response rate difference between 1:1 and 2:1 match ratios
+rr_1_1 = len(karlan_df[(karlan_df['ratio'] == 1) & (karlan_df['gave'] == 1)]) / len(karlan_df[karlan_df['ratio'] == 1])
+rr_2_1 = len(karlan_df[(karlan_df['ratio'] == 2) & (karlan_df['gave'] == 1)]) / len(karlan_df[karlan_df['ratio'] == 2])
+rr_difference_1_2 = rr_2_1 - rr_1_1
+
+# response rate difference between 2:1 and 3:1 match ratios
+rr_3_1 = len(karlan_df[(karlan_df['ratio'] == 3) & (karlan_df['gave'] == 1)]) / len(karlan_df[karlan_df['ratio'] == 3])
+rr_difference_2_3 = rr_3_1 - rr_2_1
+
+print("Response Rate Difference between 1:1 and 2:1 Match Ratios:", rr_1_2)
+print("Response Rate Difference between 2:1 and 3:1 Match Ratios:", rr_2_3)
+
+
+### 
+
+coeff_ratio_1 = 0.003
+coeff_ratio_2 = 0.005
+coeff_ratio_3 = 0.005
+
+# response rate diff between 1:1 and 2:1 match ratios
+rr_diff_coef_1_2 = coeff_ratio_2 - coeff_ratio_1
+
+# response rate diff between 2:1 and 3:1 match ratios
+rr_diff_coef_2_3 = coeff_ratio_3 - coeff_ratio_2
+
+print("Response Rate Difference (from Coefficients) between 1:1 and 2:1 Match Ratios:", rr_diff_coef_1_2)
+print("Response Rate Difference (from Coefficients) between 2:1 and 3:1 Match Ratios:", rr_diff_coef_2_3)
+```
+
+The response rate difference between individuals in the 1:1 match ratio group and the 2:1 match ratio group is approximately 0.0019 (or 0.19%). The response rate difference (derived from the coefficients) between the 1:1 match ratio group and the 2:1 match ratio group is 0.002 (or 0.2%).
+
+The response rate difference between individuals in the 2:1 match ratio group and the 3:1 match ratio group is approximately 0.0001 (or 0.01%), whereas the response rate difference (derived from the coefficients) between the 2:1 match ratio group and the 3:1 match ratio group is 0.0 (or no difference).
+
+**1:1 vs. 2:1 Match Ratios:** Both the direct data analysis and the coefficient analysis suggest that individuals in the 2:1 match ratio group have a slightly higher response rate compared to those in the 1:1 match ratio group. The difference is small but consistent across both analyses.
+
+**2:1 vs. 3:1 Match Ratios:** According to the direct data analysis, there is almost no difference in the response rates between the 2:1 match ratio group and the 3:1 match ratio group. However, the coefficient analysis indicates that the response rate difference between these groups is exactly zero.
+
+Overall, based on these findings, it seems that increasing the size of matched donations from 1:1 to 2:1 may lead to a slightly higher response rate, but further increasing the match ratio beyond 2:1 may not have a significant additional impact on the response rate.
 
 ### Size of Charitable Contribution
 
 In this subsection, I analyzed the effect of the size of matched donation on the size of the charitable contribution.
+```{python}
+from scipy.stats import ttest_ind
 
-_todo: Calculate a t-test or run a bivariate linear regression of the donation amount on the treatment status. What do we learn from doing this analysis?_
+treatment_amount = karlan_df[karlan_df['treatment'] == 1]['amount']
+control_amount = karlan_df[karlan_df['treatment'] == 0]['amount']
 
-_todo: now limit the data to just people who made a donation and repeat the previous analysis. This regression allows you to analyze how much respondents donate conditional on donating some positive amount. Interpret the regression coefficients -- what did we learn? Does the treatment coefficient have a causal interpretation?_ 
+# Perform the t-test
+t_statistic, p_value = ttest_ind(treatment_amount, control_amount)
 
-_todo: Make two plot: one for the treatment group and one for the control. Each plot should be a histogram of the donation amounts only among people who donated. Add a red vertical bar or some other annotation to indicate the sample average for each plot._
+# Print the results
+print("T-statistic:", t_statistic)
+print("P-value:", p_value)
+```
 
+**T-test Approach**: If the p-value from the t-test is less than a chosen significance level (e.g., 0.05), it indicates that there is a statistically significant difference in donation amounts between the treatment and control groups. This suggests that treatment status, such as the use of a matching grant letter or challenge grant letter, does have a statistically significant effect on donation amounts.
+
+**Bivariate Linear Regression Approach**: If the coefficient for the 'treatment' variable in the linear regression model is statistically significant (p-value < 0.05), it indicates that treatment status has a significant effect on donation amounts. The sign of the coefficient indicates the direction of the effect (positive or negative), and the magnitude represents the size of the effect.
+
+Both the t-test approach and the Bivariate Linear Regression approach provide insights into the relationship between the treatment status and donation amounts. They help in understanding whether being in the treatment group influences the donation amounts compared to the control group.
+
+```{python}
+donated_df = karlan_df[karlan_df['amount'] > 0]
+
+#added a constant term for the intercept
+donated_df['intercept'] = 1
+X = donated_df[['intercept', 'treatment']]
+y = donated_df['amount']
+
+model = sm.OLS(y, X).fit()
+
+
+print(model.summary())
+###
+
+treatment_amount = donated_df[donated_df['treatment'] == 1]['amount']
+control_amount = donated_df[donated_df['treatment'] == 0]['amount']
+
+t_statistic, p_value = ttest_ind(treatment_amount, control_amount)
+
+print("T-statistic:", t_statistic)
+print("P-value:", p_value)
+```
+
+Based on these results, we can conclude that there is no significant difference in the amount donated by individuals in the treatment group compared to those in the control group. Therefore, the treatment coefficient does not have a causal interpretation regarding the effectiveness of the treatment on the amount donated. It suggests that the treatment (whatever it may be) does not significantly influence the donation amount.
+
+```{python}
+import matplotlib.pyplot as plt
+
+#filtering the dataset for if a donation was made
+donated_treatment = karlan_df[(karlan_df['amount'] > 0) & (karlan_df['treatment'] == 1)]
+donated_control = karlan_df[(karlan_df['amount'] > 0) & (karlan_df['treatment'] == 0)]
+
+# sample averages for control and treatment
+avg_treatment = donated_treatment['amount'].mean()
+avg_control = donated_control['amount'].mean()
+
+# create histograms
+plt.figure(figsize=(10, 5))
+
+#histogram for treatment group
+plt.subplot(1, 2, 1)
+plt.hist(donated_treatment['amount'], color='blue', alpha=0.7)
+plt.axvline(avg_treatment, color='red', linestyle='dashed', linewidth=1, label='Sample Average')
+plt.xlabel('Donation Amount')
+plt.ylabel('Frequency')
+plt.title('Treatment Group')
+plt.legend()
+
+# histogram for control group
+plt.subplot(1, 2, 2)
+plt.hist(donated_control['amount'], color='green', alpha=0.7)
+plt.axvline(avg_control, color='red', linestyle='dashed', linewidth=1, label='Sample Average')
+plt.xlabel('Donation Amount')
+plt.ylabel('Frequency')
+plt.title('Control Group')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+```
 
 ## Simulation Experiment
 
@@ -205,12 +402,70 @@ Suppose the true distribution of respondents who do not get a charitable donatio
 Further suppose that the true distribution of respondents who do get a charitable donation match of any size  is Bernoulli with probability p=0.022 that a donation is made.
 
 ### Law of Large Numbers
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
 
-_to do:  Make a plot like those on slide 43 from our first class and explain the plot to the reader. To do this, you will simulate 100,00 draws from the control distribution and 10,000 draws from the treatment distribution. You'll then calculate a vector of 10,000 differences, and then you'll plot the cumulative average of that vector of differences. Comment on whether the cumulative average approaches the true difference in means._
+p_control = 0.018
+p_treatment = 0.022
 
+num_draws = 10000
+
+cumulative_average = np.zeros(num_draws)
+total_difference = 0
+
+for i in range(num_draws):
+    control_draw = np.random.binomial(1, p_control)
+    treatment_draw = np.random.binomial(1, p_treatment)
+    difference = treatment_draw - control_draw
+    total_difference += difference
+    cumulative_average[i] = total_difference / (i + 1)
+
+
+plt.plot(cumulative_average, color='blue')
+plt.axhline(y=p_treatment - p_control, color='red', linestyle='--', label='True Difference')
+plt.xlabel('Number of Draws')
+plt.ylabel('Cumulative Average of Difference')
+plt.title('Cumulative Average of Difference in Proportions')
+plt.legend()
+plt.show()
+```
+
+As evident in the graph, as the number of draws increases, the cumulative average of the difference in proportions becomes more stable and approaches the true difference in means. This demonstrates that as the sample size becomes larger, the estimate of the difference in means becomes more accurate and reliable. Therefore, as the sample size increases, the random sampling variability decreases, which indicates that the larger samples provide more precise estimates of population parameters and allows statisticians to make more explicit causal claims in experimentation. (assuming that all other statistical theories are upheld)
 
 ### Central Limit Theorem
+```{python}
+p_control = 0.018
+p_treatment = 0.022
 
-_to do: Make 4 histograms like those on slide 44 from our first class at sample sizes 50, 200, 500, and 1000 and explain these plots to the reader. To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. Comment on whether zero is in the "middle" of the distribution or whether it's in the "tail."_
 
+sample_sizes = [50, 200, 500, 1000]
+num_simulations = 1000
 
+average_differences = {}
+
+for n in sample_sizes:
+    average_differences[n] = []
+    for _ in range(num_simulations):
+        control_draws = np.random.binomial(1, p_control, size=n)
+        treatment_draws = np.random.binomial(1, p_treatment, size=n)
+        average_difference = np.mean(treatment_draws) - np.mean(control_draws)
+        average_differences[n].append(average_difference)
+
+plt.figure(figsize=(12, 8))
+for i, n in enumerate(sample_sizes):
+    plt.subplot(2, 2, i+1)
+    plt.hist(average_differences[n], bins=30, color='blue', alpha=0.7, orientation='horizontal')
+    plt.ylabel('Average Difference')
+    plt.xlabel('Frequency')
+    plt.title(f'Sample Size = {n}')
+    plt.axhline(y=0, color='red', linestyle='--')
+plt.tight_layout()
+plt.show()
+```
+
+The histograms show the distribution of sample averages, which are the averages of a large number of samples taken from the population. According to the Central Limit Theorem, regardless of the shape of the population distribution, the distribution of sample averages tends to be normal (bell-shaped) as the sample size increases.
+
+In a normal distribution, the mean (average) is located at the center of the distribution. As we increase the sample size, the distribution of sample averages becomes increasingly normal, and the mean of this distribution approaches the true population mean. Since we're plotting the distribution of sample averages, and zero represents the mean difference (which would be the population mean difference if the samples were large enough), it's expected that zero would be located in the center or "middle" of the distribution.
+
+Therefore, in the histograms representing the Central Limit Theorem, zero typically represents the "middle" of the distribution. As the sample size increases, the distribution becomes more concentrated around zero, indicating that the sample averages are more likely to be close to the true population mean difference.

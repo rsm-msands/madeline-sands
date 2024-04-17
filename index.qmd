@@ -12,4 +12,15 @@ about:
     
 ---
 
-Welcome to my website!
+  Madeline is the Senior Category Data Manager at Scientist.com and Data Scientist. When not learning about machine learning and natural language processing, she enjoys spending time road and mountain biking, throwing pottery, and being outside. 
+
+## Education
+
+University of California, San Diego | San Diego, CA
+Masters of Science in Business Analytics | July 2023 - December 2015
+
+University of California, Irvine | Irvine, CA
+B.S in Analytical Chemistry | Sept 2015 - March 2020
+
+## Experience
+
