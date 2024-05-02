@@ -13,5 +13,11 @@
   },
   "projects.qmd": {
     "projects.html": "c91b4a60"
+  },
+  "projects/project2/index.qmd": {
+    "index.html": "5774f70c"
+  },
+  "projects/project2/Interactive-1.ipynb": {
+    "Interactive-1.html": "4b299db9"
   }
 }

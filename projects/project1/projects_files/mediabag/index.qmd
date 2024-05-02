@@ -279,8 +279,8 @@ rr_difference_1_2 = rr_2_1 - rr_1_1
 rr_3_1 = len(karlan_df[(karlan_df['ratio'] == 3) & (karlan_df['gave'] == 1)]) / len(karlan_df[karlan_df['ratio'] == 3])
 rr_difference_2_3 = rr_3_1 - rr_2_1
 
-print("Response Rate Difference between 1:1 and 2:1 Match Ratios:", rr_1_2)
-print("Response Rate Difference between 2:1 and 3:1 Match Ratios:", rr_2_3)
+print("Response Rate Difference between 1:1 and 2:1 Match Ratios:", rr_difference_1_2)
+print("Response Rate Difference between 2:1 and 3:1 Match Ratios:", rr_difference_2_3)
 
 
 ### 

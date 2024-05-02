@@ -9,6 +9,8 @@ about:
       href: mailto:m.h.sands2012@gmail.com
     - icon: linkedin
       href: https://www.linkedin.com/in/madeline-sands
+    - icon: github
+      href: https://github.com/rsm-msands
     
 ---
 
