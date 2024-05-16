@@ -1,0 +1,406 @@
+---
+title: "Multi-Nomial Logit (MNL) and Conjoint Analysis"
+author: "Madeline Sands"
+date: "2024-05-15"
+callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
+editor_options: 
+  chunk_output_type: console
+---
+
+This assignment uses a Multi-nomial Logit (MNL) model to analyze (1) yogurt purchase data made by consumers at a retail location, and (2) conjoint data about consumer preferences for minivans.
+
+
+## 1. Estimating Yogurt Preferences using a Multi-nomial logit model
+
+### Background on the Likelihood for the Multi-nomial logit Model 
+A multi-nomimal logit (MNL) model is an extension of the traditional binary logit model and used when the dependent variable has more than two categories or levels. In a MNL model, the probabilities of each category are modeled simultaneously using a set of independent variables and the probabilities sum up to 1 across all categories. 
+
+Our MNL model will estimate parameters for each explanatory variable which represent the effect of that variable on the odds of choosing one alternative over the others. These parameters are typically estimated using maximum likelihood estimation. 
+
+Suppose we have $i=1,\ldots,n$ consumers who each select exactly one product $j$ from a set of $J$ products. The outcome variable is the identity of the product chosen $y_i \in \{1, \ldots, J\}$ or equivalently a vector of $J-1$ zeros and $1$ one, where the $1$ indicates the selected product. For example, if the third product was chosen out of 4 products, then either $y=3$ or $y=(0,0,1,0)$ depending on how we want to represent it. 
+
+Suppose we also have a vector of data on each product that is represented by $x_j$ (eg, size, price, etc.). 
+
+We can then model the consumer's decision as the selection of the product that provides the most utility, and we'll specify the utility function as a linear function of the product characteristics:
+
+$$ U_{ij} = x_j'\beta + \epsilon_{ij} $$
+
+where $x_j$ is the vector of product data and $\epsilon_{ij}$ is a random error term.
+
+Because we have chosen the specific type of randomness (The choice of the i.i.d. extreme value error term), it becomes possible to derive a simple formula to predict the likelihood of a consumer choosing a particular product from the set of products listed:
+
+$$ \mathbb{P}_i(j) = \frac{e^{x_j'\beta}}{\sum_{k=1}^Je^{x_k'\beta}} $$
+
+For example, if there are 4 products, the probability or likelihood that consumer $i$ chooses product 3 is:
+
+$$ \mathbb{P}_i(3) = \frac{e^{x_3'\beta}}{e^{x_1'\beta} + e^{x_2'\beta} + e^{x_3'\beta} + e^{x_4'\beta}} $$
+
+Therefore, to figure out how likely it is that a consumer made their specific choice of product, you can multiply the probabilities of choosing each product together, but only the probability of the actual chosen product affects the final result because of the indicator variable. r $i$ is the product of the $J$ probabilities, each raised to the power of an indicator variable($\delta_{ij}$) that indicates the chosen product:
+
+$$ L_i(\beta) = \prod_{j=1}^J \mathbb{P}_i(j)^{\delta_{ij}} = \mathbb{P}_i(1)^{\delta_{i1}} \times \ldots \times \mathbb{P}_i(J)^{\delta_{iJ}}$$
+
+Just to note, the $$\delta_{ij}$$ indicator variable acts as a switch that is "on" (equal to 1) when the specific condition (consumer ii choosing product jj) is met, and "off" (equal to 0) when it is not. In the context of the likelihood function described, the indicator variable helps in the following way:
+
+  - When $\delta_{ij}$ = 1, the probability of choosing product jj is included in the calculation.
+  - When $\delta_{ij}$ = 0, the probability of choosing product jj is effectively ignored (since raising any number to the power of 0 gives 1, which does not affect the product).
+
+Notice that if an individual consumer selected product $j=3$, then $\delta_{i3}=1$ while $\delta_{i1}=\delta_{i2}=\delta_{i4}=0$, then the individual likelihood is:
+
+$$ L_i(\beta) = \mathbb{P}_i(1)^0 \times \mathbb{P}_i(2)^0 \times \mathbb{P}_i(3)^1 \times \mathbb{P}_i(4)^0 = \mathbb{P}_i(3) = \frac{e^{x_3'\beta}}{\sum_{k=1}^Je^{x_k'\beta}} $$
+
+To find the overall probability of all consumers making their choices, we will find the joint likelihood by simply multiplying the individual probabilities for each consumer together:
+
+$$ L_n(\beta) = \prod_{i=1}^n L_i(\beta) = \prod_{i=1}^n \prod_{j=1}^J \mathbb{P}_i(j)^{\delta_{ij}} $$
+
+Finally, we can take the logarithm of the joint likelihood. This changes the multiplication of probabilities into a sum of logarithms, which makes it much easier math to hande.
+
+$$ \ell_n(\beta) = \sum_{i=1}^n \sum_{j=1}^J \delta_{ij} \log(\mathbb{P}_i(j)) $$
+
+
+### Yogurt Dataset
+
+We will use the `yogurt_data` dataset, which provides anonymized consumer identifiers (`id`), a vector indicating the chosen product (`y1`:`y4`), a vector indicating if any products were "featured" in the store as a form of advertising (`f1`:`f4`), and the products' prices (`p1`:`p4`). For example, consumer 1 purchased yogurt 4 at a price of 0.079/oz and none of the yogurts were featured/advertised at the time of consumer 1's purchase.  Consumers 2 through 7 each bought yogurt 2, which for consumer 2, 3, 4, and 5 was priced at 0.098/oz. Customer 6 also purchased yogurt 2, but when it was priced at 0.092/oz and consumber 7 purchased it at 0.081/oz.
+
+```{python}
+import pandas as pd 
+import numpy as np 
+
+yogurt = pd.read_csv('data/yogurt_data.csv')
+yogurt.head(15)
+```
+
+This data gives us an overview of which customer bought what yogurt brand at a specific price and indicates if the product was featured at the time. Let the vector of product features include brand dummy variables for yogurts 1-3 (we'll omit a dummy for product 4 to avoid multi-collinearity), a dummy variable to indicate if a yogurt was featured, and a continuous variable for the yogurts' prices:  
+
+$$ x_j' = [\mathbf{1}(\text{Yogurt 1}), \mathbf{1}(\text{Yogurt 2}), \mathbf{1}(\text{Yogurt 3}), X_f, X_p] $$
+
+To start to calculate our maximum liklihood for our MNL model, we first want to reorganize the data from our wide to long shape with $n \times J$ rows and a single column for each covariate.  As part of this re-organization, we'll add binary variables to indicate the first 3 products; the variables for features and price are included in the dataset and simply need to be "pivoted" or "melted" from wide to long. By reorganizing the data this way, we can effectively analyze the likelihood of different choices using the MNL model.
+```{python}
+melted_df = pd.melt(yogurt, id_vars=['id'], value_vars=['y1', 'y2', 'y3'], var_name='feature', value_name='yogurt_chosen')
+
+melted_featured = pd.melt(yogurt, id_vars= ['id'], value_vars = ['f1', "f2", 'f3'], var_name='featured', value_name='X_featured')
+
+melted_price = pd.melt(yogurt, id_vars= ['id'], value_vars = ['p1', "p2", 'p3'], var_name='value_p', value_name='X_price')
+
+yogurt_melt = pd.merge(melted_df, melted_featured, on = "id")
+yogurt_melt1 = pd.merge(yogurt_melt, melted_price, on = 'id')
+
+print(yogurt_melt1.head())
+```
+
+```{python}
+#creating our binary variables based on if Y1, Y2, or Y3 is in the row
+yogurt_melt1["X_yogurt1"] = yogurt_melt1["feature"].apply(lambda x: 1 if x =='y1' else 0)
+yogurt_melt1["X_yogurt2"] = yogurt_melt1["feature"].apply(lambda x: 1 if x =='y2' else 0)
+yogurt_melt1["X_yogurt3"] = yogurt_melt1["feature"].apply(lambda x: 1 if x =='y3' else 0)
+```
+
+```{python}
+# Drop the unnecessary yogurt columns
+yogurt_melt1 = yogurt_melt1.drop(columns=['feature', 'featured', 'value_p'])
+print(yogurt_melt1.head())
+```
+
+```{python}
+yogurt_melt1 = yogurt_melt1[["id", "X_yogurt1", "X_yogurt2", "X_yogurt3", "X_featured","X_price", "yogurt_chosen"]]
+```
+
+Now we have a dataframe that will enable us to effectively analyze the likelihood of different choices via our MNL model. To being this process, we need to define our log-likelihood function. Our `log_likelihood` function has 3 inputs: 
+- `params` - the array containing the parameter values to be optimized
+- `X` - Design matrix with predictors
+- `y` - Dependent variable representing the choice made by each observation
+
+Our function will return the log-likelihood of the MNL Model.
+
+```{python}
+X = yogurt_melt1[['X_yogurt1', 'X_yogurt2', 'X_yogurt3','X_price','X_featured']].values
+y= yogurt_melt1['yogurt_chosen'].values
+
+def log_likelihood(params, data):
+    beta1, beta2, beta3, beta_f, beta_p = params
+    
+    # Extract data
+    id = data['id']
+    value = data['yogurt_chosen']
+    yogurt_1 = data['X_yogurt1']
+    yogurt_2 = data['X_yogurt2']
+    yogurt_3 = data['X_yogurt3']
+    X_price = data['X_price']
+    X_featured = data['X_featured']
+    
+    # Calculate probability of buying
+    p_buy = np.exp(beta1 * yogurt_1 + beta2 * yogurt_2 + beta3 * yogurt_3 + beta_f * X_featured + beta_p * X_price) / (1 + np.exp(beta1 * yogurt_1 + beta2 * yogurt_2 + beta3 * yogurt_3 + beta_f * X_featured + beta_p * X_price))
+    
+    # Calculate log-likelihood for each observation
+    log_likelihoods = value * np.log(p_buy) + (1 - value) * np.log(1 - p_buy)
+    
+    # Sum up log-likelihoods to get the joint log likelihood
+    joint_log_likelihood_value = np.sum(log_likelihoods)
+    
+    return joint_log_likelihood_value
+```
+
+_todo: Use `optim()` in R or `optimize()` in Python to find the MLEs for the 5 parameters ($\beta_1, \beta_2, \beta_3, \beta_f, \beta_p$).  (Hint: you should find 2 positive and 1 negative product intercepts, a small positive coefficient estimate for featured, and a large negative coefficient estimate for price.)_
+
+```{python}
+from scipy.optimize import minimize
+from scipy import optimize
+
+# Define log-likelihood function
+
+def neg_log_likelihood(params, data):
+    beta1, beta2, beta3, beta_f, beta_p = params
+    
+    # Extract data
+    id = data['id']
+    value = data['yogurt_chosen']
+    yogurt_1 = data['X_yogurt1']
+    yogurt_2 = data['X_yogurt2']
+    yogurt_3 = data['X_yogurt3']
+    X_price = data['X_price']
+    X_featured = data['X_featured']
+    
+    # Calculate probability of buying
+    np_exponent = np.exp(beta1 * yogurt_1 + beta2 * yogurt_2 + beta3 * yogurt_3 + beta_f * X_featured + beta_p * X_price)
+    p_buy = np_exponent / (1 + np_exponent)
+    
+    # Calculate log-likelihood for each observation
+    log_likelihoods = value * np.log(p_buy) + (1 - value) * np.log(1 - p_buy)
+    
+    # Sum up log-likelihoods to get the joint log likelihood
+    joint_log_likelihood_value = np.sum(log_likelihoods)
+    
+    return -joint_log_likelihood_value  # Return negative log-likelihood for minimization
+
+# Define initial guess for parameters
+initial_params = [1, 1, 1, 0.1, 1]
+
+# Call minimize to find MLEs
+result = minimize(neg_log_likelihood, initial_params, args=(yogurt_melt1,))
+
+# Extract MLEs
+mle_params = result.x
+
+# Print MLEs
+print("Maximum Likelihood Estimates (MLEs) for parameters:")
+print("Beta1:", mle_params[0])
+print("Beta2:", mle_params[1])
+print("Beta3:", mle_params[2])
+print("Beta_f:", mle_params[3])
+print("Beta_p:", mle_params[4])
+```
+
+### Discussion
+
+We learn...
+
+_todo: interpret the 3 product intercepts (which yogurt is most preferred?)._
+
+The intercepts for the yogurt products are the coefficients for `yogurt1`, `yogurt2`, and `yogurt3`. These coefficients indicate the prefrence for each yogurt product when all other variables are held constant. 
+
+    The intercepts for the yogurt products are the coefficients for yogurt_1, yogurt_2, and yogurt_3. These coefficients indicate the preference for each yogurt product when all other variables are held constant.
+    Since the coefficients are negative, it suggests that consumers are less likely to buy the respective yogurt compared to the reference category (which is likely yogurt_4, assuming it's not explicitly included in the model).
+    The magnitude of the coefficient indicates the strength of preference relative to the reference category. So, the larger the negative coefficient, the less preferred the yogurt.
+
+Featured (Promotional Effect):
+
+    The coefficient for X_featured is -3.24661941. This indicates the effect of featuring a product on the likelihood of purchase compared to not featuring it.
+    The negative coefficient suggests that featuring a product significantly decreases the likelihood of purchase. This could be counterintuitive and might need further investigation.
+
+Price Sensitivity:
+
+    The coefficient for X_price is -2.4392646. This represents the sensitivity of consumers to price changes.
+    The negative coefficient indicates that as the price increases, the likelihood of purchase decreases. This is consistent with economic theory and consumer behavior.
+
+
+
+_todo: use the estimated price coefficient as a dollar-per-util conversion factor. Use this conversion factor to calculate the dollar benefit between the most-preferred yogurt (the one with the highest intercept) and the least preferred yogurt (the one with the lowest intercept). This is a per-unit monetary measure of brand value._
+
+```{python}
+beta_p = -0.8669  # Estimated price coefficient
+intercepts = [-0.59083, -0.33657, -3.44006]  # Intercepts for yogurt products
+
+# Identify the most preferred and least preferred yogurt
+most_preferred_index = np.argmax(intercepts)
+least_preferred_index = np.argmin(intercepts)
+
+# Calculate the utility difference
+utility_difference = intercepts[most_preferred_index] - intercepts[least_preferred_index]
+
+# Calculate the dollar benefit using the price coefficient
+dollar_benefit = utility_difference * beta_p
+
+print("Dollar benefit between the most-preferred and least-preferred yogurt: $", dollar_benefit)
+```
+
+One benefit of the MNL model is that we can simulate counterfactuals (eg, what if the price of yogurt 1 was $0.10/oz instead of $0.08/oz).
+
+_todo: calculate the market shares in the market at the time the data were collected.  Then, increase the price of yogurt 1 by $0.10 and use your fitted model to predict p(y|x) for each consumer and each product (this should be a matrix of $N \times 4$ estimated choice probabilities.  Take the column averages to get the new, expected market shares that result from the $0.10 price increase to yogurt 1.  Do the yogurt 1 market shares decrease?_
+
+```{python}
+import numpy as np
+
+# Assuming you have the fitted model parameters and the original dataset
+
+# Fitted model parameters (including intercepts)
+# beta1, beta2, beta3, beta_f, beta_p = [intercept, beta1, beta2, beta3, beta_f, beta_p]
+fitted_params = [-0.65450389, -0.40032374, -3.50331314, -3.24661941, -2.4392646]
+
+# Original price of yogurt 1
+original_price_yogurt1 = 0.108
+
+# Increase in price of yogurt 1
+price_increase = 0.10
+
+# New price of yogurt 1
+new_price_yogurt1 = original_price_yogurt1 + price_increase
+
+# Calculate the utility for each product with the new price of yogurt 1
+utility_yogurt1_new_price = fitted_params[0] + fitted_params[1] + new_price_yogurt1 * fitted_params[4]
+utility_yogurt2 = fitted_params[0] + fitted_params[2] + original_price_yogurt1 * fitted_params[4]
+utility_yogurt3 = fitted_params[0] + fitted_params[3] + original_price_yogurt1 * fitted_params[4]
+utility_yogurt4 = fitted_params[0] + fitted_params[4]
+
+# Calculate choice probabilities
+prob_yogurt1_new_price = np.exp(utility_yogurt1_new_price) / (1 + np.exp(utility_yogurt1_new_price))
+prob_yogurt2 = np.exp(utility_yogurt2) / (1 + np.exp(utility_yogurt2))
+prob_yogurt3 = np.exp(utility_yogurt3) / (1 + np.exp(utility_yogurt3))
+prob_yogurt4 = np.exp(utility_yogurt4) / (1 + np.exp(utility_yogurt4))
+
+# Calculate market shares
+market_share_yogurt1_new_price = prob_yogurt1_new_price
+market_share_yogurt2 = prob_yogurt2
+market_share_yogurt3 = prob_yogurt3
+market_share_yogurt4 = prob_yogurt4
+
+# Print market shares
+print("Market share for yogurt 1 with new price: ", market_share_yogurt1_new_price)
+print("Market share for yogurt 2: ", market_share_yogurt2)
+print("Market share for yogurt 3: ", market_share_yogurt3)
+print("Market share for yogurt 4: ", market_share_yogurt4)
+```
+
+
+
+## 2. Estimating Minivan Preferences via Conjoint Analysis
+
+Conjoint Analysisis an advanced quantitative markeitng research method popular for product and pricing research. Conjoint analysis has gained popularity in recent years because the survey questions mimic the tradeoffs people make in the real world. It enables researchers to quantify how a product attribute changes demand and evaluate the market acceptance of products before they launch. 
+
+In this case, we will be evaluating minivan preferences via conjoint analysis. 
+
+### Data
+
+```{python}
+import numpy as np 
+import pandas as pd 
+import statsmodels.api as sm
+import pyrsm as rsm
+
+conjoint = pd.read_csv('data/conjoint.csv')
+
+conjoint.head(6)
+```
+
+
+This data contains the survey results from 200 respondents who compeleted 15 choice tasks with 3 alternatives given for each choice task. For each choice task there were 4 attributes `seat number`, `cargo space `, `engine type`, and `price`. Within the attributes, there are various levels. For number of seats, the levels are 6,7,8. Cargo Space has levels of 2ft and 3ft, Engine Type has levels of gas, hybrid, electric, and price in thousands of dollars). For each alternative given within the choice task, there is a binary column indicating which alternative-level combination was chosen. 
+
+For example, in the rows printed above we see that for the first choice task, respondent with the `resp.id` of `1` was given **3** choice options. <ul>
+<li> Option 1: 6 Seats, 2ft Cargo, Gas Engine, 35K </li>
+<li> Option 2: 8 Seats, 3ft Cargo, Hybrid Engine, 30K </li>
+<li> Option 3: 6 Seats, 3ft Cargo, Gas Engine, 30K </li>
+</ul>
+
+In this first choice task, respondent 1 chose **option 3** as indicated by the binary column `choice`. 
+
+### Model
+```{python}
+#converting categorical variables into numerical variables to run the model
+conjoint_dummies1 = pd.get_dummies(conjoint['cargo'], prefix = 'cargo')
+conjoint_dummies2 = pd.get_dummies(conjoint["eng"], prefix = 'eng')
+
+#concatenate the dummy variables back with the original dataframe
+concat_conjoint = pd.concat([conjoint, conjoint_dummies1, conjoint_dummies2], axis = 1)
+```
+```{python}
+#converting the yes, no's for carpool into 1s and 0s
+concat_conjoint["carpool"] = rsm.ifelse(concat_conjoint["carpool"] == 'yes',1,0)
+concat_conjoint.head()
+```
+
+```{python}
+#converting the dummy true false variables into 1s and 0s
+concat_conjoint[["cargo_2ft", "cargo_3ft", "eng_elec", "eng_gas", "eng_hyb"]] = concat_conjoint[["cargo_2ft", "cargo_3ft", "eng_elec", "eng_gas", "eng_hyb"]].astype(int)
+```
+
+
+```{python}
+
+#omit variables to avoid multi-collinearity
+conjoint_omit = concat_conjoint[(concat_conjoint['seat'] != 6)]
+
+#design matrix
+X = conjoint_omit[['seat', 'cargo_3ft', 'eng_elec','eng_hyb', 'price']]
+X = sm.add_constant(X)  # Add intercept
+
+# Fit MNL model
+model = sm.MNLogit(conjoint_omit['choice'], X)
+result = model.fit()
+
+# Display coefficients and standard errors
+print(result.summary())
+```
+
+
+
+### Results
+
+Above is the output from our multi-nomial logit model generated using our conjoint survey data. We can use the coefficients from the output to determine which preferences are preferred by survey respondents and quantify the change in utility they offer the respondents. The first thing to note is our constant value. In this model, our constant refers to the variables we excluded to avoid multicollinearity and they act as our baseline. For this case, this is a car that seats 6 people, has a gas engine and has a cargo space of 2ft. When analyzing the coefficient values, we will compare how changing the levels of the attributes changes utility value in comparison to the baseline value. 
+
+In summary, our results show us:
+- A one-unit increase in `seat` is associated with an increase in the log-odds of choosing `choice=1` by approximately **0.2307**, holding all other variables constant.
+- Similarly, having `cargo_3ft` is associated with an increase in the log-odds of choosing `choice=1` by approximately **0.3890** compared to having `cargo_2ft`, holding all other variables constant.
+- `eng_elec` and `eng_hyb` are the indicators for electric and hybrid engines, respectively, compared to gas engines. Having an electric engine is associated with a decrease in the log-odds of choosing `choice=1` by approximately **1.4520**, while having a hybrid engine is associated with a decrease by approximately **0.7315**, compared to gas engines.
+- Finally, an increase in `price` is associated with a decrease in the log-odds of choosing `choice=1` by approximately **0.1556**, holding all other variables constant.
+
+Based on the coefficients, people seem to prefer `seat` = 8, `engine` = gas, `price` = 30K, and `cargo` = 3ft.
+
+_todo: Use the price coefficient as a dollar-per-util conversion factor. What is the dollar value of 3ft of cargo space as compared to 2ft of cargo space?_
+
+Our `price` coefficient is **-0.1556**, which means that a one unit increase in the `price` variable is associateed with a decrease in the log-odds of choicing that combination by **0.1556**, holding all other variables constants. 
+
+```{python}
+#price coefficient extracted
+price_coeff = -0.1556
+
+# converting the price coefficient
+dollar_per_util = 1 / price_coeff
+
+# Calculate the dollar value of 3ft of cargo space compared to 2ft
+cargo_3ft_value = 0.3890  # coefficient for cargo_3ft
+cargo_2ft_value = 0  # reference category
+
+cargo_space_value_difference = (cargo_3ft_value - cargo_2ft_value) * dollar_per_util
+
+print(f"The dollar value of 3ft of cargo space compared to 2ft of cargo space is approximately: ${cargo_space_value_difference:.2f}")
+```
+
+_todo: assume the market consists of the following 6 minivans. Predict the market shares of each minivan in the market._
+
+| Minivan | Seats | Cargo | Engine | Price |
+|---------|-------|-------|--------|-------|
+| A       | 7     | 2     | Hyb    | 30    |
+| B       | 6     | 2     | Gas    | 30    |
+| C       | 8     | 2     | Gas    | 30    |
+| D       | 7     | 3     | Gas    | 40    |
+| E       | 6     | 2     | Elec   | 40    |
+| F       | 7     | 2     | Hyb    | 35    |
+
+
+_hint: this example is taken from the "R 4 Marketing Research" book by Chapman and Feit. I believe the same example is present in the companion book titled "Python 4 Marketing Research".  I encourage you to attempt these questions on your own, but if you get stuck or would like to compare you results to "the answers," you may consult the Chapman and Feit books._
+
+
+
+
+
+
+
+

@@ -19,5 +19,9 @@
   },
   "projects/project2/Interactive-1.ipynb": {
     "Interactive-1.html": "4b299db9"
+  },
+  "projects/project3/index.qmd": {
+    "index.html": "2e2b59de",
+    "index.tex": "f8748da9"
   }
 }

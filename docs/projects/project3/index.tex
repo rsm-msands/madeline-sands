@@ -1,0 +1,525 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Multi-Nomial Logit (MNL) and Conjoint Analysis},
+  pdfauthor={Madeline Sands},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Multi-Nomial Logit (MNL) and Conjoint Analysis}
+\author{Madeline Sands}
+\date{Invalid Date}
+
+\begin{document}
+\maketitle
+
+This assignment uses a Multi-nomial Logit (MNL) model to analyze (1)
+yogurt purchase data made by consumers at a retail location, and (2)
+conjoint data about consumer preferences for minivans.
+
+\subsection{1. Estimating Yogurt Preferences using a Multi-nomial logit
+model}\label{estimating-yogurt-preferences-using-a-multi-nomial-logit-model}
+
+\subsubsection{Likelihood for the Multi-nomial Logit (MNL)
+Model}\label{likelihood-for-the-multi-nomial-logit-mnl-model}
+
+A multi-nomimal logit (MNL) model is an extension of the traditional
+binary logit model used for modeling choices when the dependent variable
+has more than two categories. Whereas a traditional logit model, or
+binary logit model, only deals with binary outcomes such as
+``yes''/``no'' or 1/0, a MNL model deals with categorical outsomes with
+more than just 2 levels such as ``yes/no/maybe.'' In a MNL model, the
+probabilities of each category are modeled simultaneously using a set of
+independent variables and the probabilities sum up to 1 across all
+categories.
+
+Our MNL model will estimate parameters for each explanatory variable
+which represent the effect of that variable on the odds of choosing one
+alternative over the others. These parameters are typically estimated
+using maximum likelihood estimation.
+
+Suppose we have \(i=1,\ldots,n\) consumers who each select exactly one
+product \(j\) from a set of \(J\) products. The outcome variable is the
+identity of the product chosen \(y_i \in \{1, \ldots, J\}\) or
+equivalently a vector of \(J-1\) zeros and \(1\) one, where the \(1\)
+indicates the selected product. For example, if the third product was
+chosen out of 4 products, then either \(y=3\) or \(y=(0,0,1,0)\)
+depending on how we want to represent it. Suppose we also have a vector
+of data on each product \(x_j\) (eg, size, price, etc.).
+
+We model the consumer's decision as the selection of the product that
+provides the most utility, and we'll specify the utility function as a
+linear function of the product characteristics:
+
+\[ U_{ij} = x_j'\beta + \epsilon_{ij} \]
+
+where \(\epsilon_{ij}\) is an i.i.d. extreme value error term.
+
+The choice of the i.i.d. extreme value error term leads to a closed-form
+expression for the probability that consumer \(i\) chooses product
+\(j\):
+
+\[ \mathbb{P}_i(j) = \frac{e^{x_j'\beta}}{\sum_{k=1}^Je^{x_k'\beta}} \]
+
+For example, if there are 4 products, the probability that consumer
+\(i\) chooses product 3 is:
+
+\[ \mathbb{P}_i(3) = \frac{e^{x_3'\beta}}{e^{x_1'\beta} + e^{x_2'\beta} + e^{x_3'\beta} + e^{x_4'\beta}} \]
+
+A clever way to write the individual likelihood function for consumer
+\(i\) is the product of the \(J\) probabilities, each raised to the
+power of an indicator variable (\(\delta_{ij}\)) that indicates the
+chosen product:
+
+\[ L_i(\beta) = \prod_{j=1}^J \mathbb{P}_i(j)^{\delta_{ij}} = \mathbb{P}_i(1)^{\delta_{i1}} \times \ldots \times \mathbb{P}_i(J)^{\delta_{iJ}}\]
+
+Notice that if the consumer selected product \(j=3\), then
+\(\delta_{i3}=1\) while \(\delta_{i1}=\delta_{i2}=\delta_{i4}=0\) and
+the likelihood is:
+
+\[ L_i(\beta) = \mathbb{P}_i(1)^0 \times \mathbb{P}_i(2)^0 \times \mathbb{P}_i(3)^1 \times \mathbb{P}_i(4)^0 = \mathbb{P}_i(3) = \frac{e^{x_3'\beta}}{\sum_{k=1}^Je^{x_k'\beta}} \]
+
+The joint likelihood (across all consumers) is the product of the \(n\)
+individual likelihoods:
+
+\[ L_n(\beta) = \prod_{i=1}^n L_i(\beta) = \prod_{i=1}^n \prod_{j=1}^J \mathbb{P}_i(j)^{\delta_{ij}} \]
+
+And the joint log-likelihood function is:
+
+\[ \ell_n(\beta) = \sum_{i=1}^n \sum_{j=1}^J \delta_{ij} \log(\mathbb{P}_i(j)) \]
+
+\subsubsection{Yogurt Dataset}\label{yogurt-dataset}
+
+We will use the \texttt{yogurt\_data} dataset, which provides anonymized
+consumer identifiers (\texttt{id}), a vector indicating the chosen
+product (\texttt{y1}:\texttt{y4}), a vector indicating if any products
+were ``featured'' in the store as a form of advertising
+(\texttt{f1}:\texttt{f4}), and the products' prices
+(\texttt{p1}:\texttt{p4}). For example, consumer 1 purchased yogurt 4 at
+a price of 0.079/oz and none of the yogurts were featured/advertised at
+the time of consumer 1's purchase. Consumers 2 through 7 each bought
+yogurt 2, which for consumer 2, 3, 4, and 5 was priced at 0.098/oz,
+consumer 6 purchased yogurt 2 when it was priced at 0.092/oz and
+consumber 7 purchased it at 0.081/oz.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd }
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np }
+
+\NormalTok{yogurt }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}data/yogurt\_data.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{yogurt.head(}\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllllllll@{}}
+\toprule\noalign{}
+& id & y1 & y2 & y3 & y4 & f1 & f2 & f3 & f4 & p1 & p2 & p3 & p4 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0.108 & 0.081 & 0.061 & 0.079 \\
+1 & 2 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0.108 & 0.098 & 0.064 & 0.075 \\
+2 & 3 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0.108 & 0.098 & 0.061 & 0.086 \\
+3 & 4 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0.108 & 0.098 & 0.061 & 0.086 \\
+4 & 5 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0.125 & 0.098 & 0.049 & 0.079 \\
+5 & 6 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0.108 & 0.092 & 0.050 & 0.079 \\
+6 & 7 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0.103 & 0.081 & 0.049 & 0.079 \\
+7 & 8 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0.108 & 0.086 & 0.054 & 0.079 \\
+8 & 9 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0.108 & 0.098 & 0.050 & 0.079 \\
+9 & 10 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0.108 & 0.098 & 0.050 &
+0.079 \\
+\end{longtable}
+
+This data gives us an overview of which consumer bought what yogurt
+brand when it was priced at a specific value and if the product was
+featured at the time.nLet the vector of product features include brand
+dummy variables for yogurts 1-3 (we'll omit a dummy for product 4 to
+avoid multi-collinearity), a dummy variable to indicate if a yogurt was
+featured, and a continuous variable for the yogurts' prices:
+
+\[ x_j' = [\mathbf{1}(\text{Yogurt 1}), \mathbf{1}(\text{Yogurt 2}), \mathbf{1}(\text{Yogurt 3}), X_f, X_p] \]
+
+The ``hard part'' of the MNL likelihood function is organizing the data,
+as we need to keep track of 3 dimensions (consumer \(i\), covariate
+\(k\), and product \(j\)) instead of the typical 2 dimensions for
+cross-sectional regression models (consumer \(i\) and covariate \(k\)).
+
+To start to calculate our maximum liklihood for our MNL model, we first
+want to reorganize the data from our wide shape to a long shape.
+
+What we would like to do is reorganize the data from a ``wide'' shape
+with \(n\) rows and multiple columns for each covariate, to a ``long''
+shape with \(n \times J\) rows and a single column for each covariate.
+As part of this re-organization, we'll add binary variables to indicate
+the first 3 products; the variables for features and price are included
+in the dataset and simply need to be ``pivoted'' or ``melted'' from wide
+to long.
+
+\emph{todo: reshape and prep the data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{):}
+\NormalTok{    yogurt[}\SpecialStringTok{f\textquotesingle{}product\_}\SpecialCharTok{\{}\NormalTok{i}\SpecialCharTok{\}}\SpecialStringTok{\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ (yogurt[}\SpecialStringTok{f\textquotesingle{}y}\SpecialCharTok{\{}\NormalTok{i}\SpecialCharTok{\}}\SpecialStringTok{\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{).astype(}\BuiltInTok{int}\NormalTok{)}
+
+\CommentTok{\# Now, reshape the data from wide to long format}
+\NormalTok{yogurt\_long }\OperatorTok{=}\NormalTok{ pd.melt(yogurt, id\_vars}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}id\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}p1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}p2\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}p3\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}p4\textquotesingle{}}\NormalTok{], }
+\NormalTok{                  value\_vars}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}y1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}y2\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}y3\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}y4\textquotesingle{}}\NormalTok{], }
+\NormalTok{                  var\_name}\OperatorTok{=}\StringTok{\textquotesingle{}product\textquotesingle{}}\NormalTok{, value\_name}\OperatorTok{=}\StringTok{\textquotesingle{}chosen\textquotesingle{}}\NormalTok{)}
+\NormalTok{yogurt\_long.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& id & p1 & p2 & p3 & p4 & product & chosen \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 1 & 0.108 & 0.081 & 0.061 & 0.079 & y1 & 0 \\
+1 & 2 & 0.108 & 0.098 & 0.064 & 0.075 & y1 & 0 \\
+2 & 3 & 0.108 & 0.098 & 0.061 & 0.086 & y1 & 0 \\
+3 & 4 & 0.108 & 0.098 & 0.061 & 0.086 & y1 & 0 \\
+4 & 5 & 0.125 & 0.098 & 0.049 & 0.079 & y1 & 0 \\
+\end{longtable}
+
+\subsubsection{Estimation}\label{estimation}
+
+\emph{todo: Code up the log-likelihood function.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\textquotesingle{}\textquotesingle{}\textquotesingle{}}
+\CommentTok{def log\_likelihood(params, data):}
+\CommentTok{    """}
+\CommentTok{    Compute the log{-}likelihood of the multinomial logit model given the parameters and data.}
+\CommentTok{    }
+\CommentTok{    Parameters:}
+\CommentTok{        params (array{-}like): Parameters to be estimated.}
+\CommentTok{        data (DataFrame): DataFrame containing the data.}
+\CommentTok{        }
+\CommentTok{    Returns:}
+\CommentTok{        float: Log{-}likelihood value.}
+\CommentTok{    """}
+\CommentTok{    \# Extracting relevant data from the DataFrame}
+\CommentTok{    id\_vals = data[\textquotesingle{}id\textquotesingle{}].values}
+\CommentTok{    chosen\_vals = data[\textquotesingle{}chosen\textquotesingle{}].values}
+\CommentTok{    features = data[[\textquotesingle{}f1\textquotesingle{}, \textquotesingle{}f2\textquotesingle{}, \textquotesingle{}f3\textquotesingle{}, \textquotesingle{}f4\textquotesingle{}]].values}
+\CommentTok{    prices = data[[\textquotesingle{}p1\textquotesingle{}, \textquotesingle{}p2\textquotesingle{}, \textquotesingle{}p3\textquotesingle{}, \textquotesingle{}p4\textquotesingle{}]].values}
+\CommentTok{    }
+\CommentTok{    \# Extracting parameters}
+\CommentTok{    beta = params[:{-}1]  \# Coefficients for product features and prices}
+\CommentTok{    gamma = params[{-}1]   \# Scale parameter for the extreme value error term}
+\CommentTok{    }
+\CommentTok{    \# Calculate utility for each alternative for each observation}
+\CommentTok{    utilities = np.dot(features, beta) + np.dot(prices, beta[{-}4:])}
+\CommentTok{    }
+\CommentTok{    \# Calculate the log{-}sum{-}exp term for each observation}
+\CommentTok{    log\_sum\_exp\_term = np.log(np.sum(np.exp(utilities), axis=1))}
+\CommentTok{    }
+\CommentTok{    \# Calculate log{-}likelihood for each observation}
+\CommentTok{    individual\_log\_likelihoods = utilities[np.arange(len(id\_vals)), chosen\_vals] {-} log\_sum\_exp\_term}
+\CommentTok{    }
+\CommentTok{    \# Calculate the joint log{-}likelihood}
+\CommentTok{    joint\_log\_likelihood = np.sum(individual\_log\_likelihoods)}
+\CommentTok{    }
+\CommentTok{    return joint\_log\_likelihood\textquotesingle{}\textquotesingle{}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+'\ndef log_likelihood(params, data):\n    """\n    Compute the log-likelihood of the multinomial logit model given the parameters and data.\n    \n    Parameters:\n        params (array-like): Parameters to be estimated.\n        data (DataFrame): DataFrame containing the data.\n        \n    Returns:\n        float: Log-likelihood value.\n    """\n    # Extracting relevant data from the DataFrame\n    id_vals = data[\'id\'].values\n    chosen_vals = data[\'chosen\'].values\n    features = data[[\'f1\', \'f2\', \'f3\', \'f4\']].values\n    prices = data[[\'p1\', \'p2\', \'p3\', \'p4\']].values\n    \n    # Extracting parameters\n    beta = params[:-1]  # Coefficients for product features and prices\n    gamma = params[-1]   # Scale parameter for the extreme value error term\n    \n    # Calculate utility for each alternative for each observation\n    utilities = np.dot(features, beta) + np.dot(prices, beta[-4:])\n    \n    # Calculate the log-sum-exp term for each observation\n    log_sum_exp_term = np.log(np.sum(np.exp(utilities), axis=1))\n    \n    # Calculate log-likelihood for each observation\n    individual_log_likelihoods = utilities[np.arange(len(id_vals)), chosen_vals] - log_sum_exp_term\n    \n    # Calculate the joint log-likelihood\n    joint_log_likelihood = np.sum(individual_log_likelihoods)\n    \n    return joint_log_likelihood'
+\end{verbatim}
+
+\emph{todo: Use \texttt{optim()} in R or \texttt{optimize()} in Python
+to find the MLEs for the 5 parameters
+(\(\beta_1, \beta_2, \beta_3, \beta_f, \beta_p\)). (Hint: you should
+find 2 positive and 1 negative product intercepts, a small positive
+coefficient estimate for featured, and a large negative coefficient
+estimate for price.)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\textquotesingle{}\textquotesingle{}\textquotesingle{}}
+\CommentTok{from scipy.optimize import minimize}
+\CommentTok{\#create a function that returns the negative log liklihood of our function to minimize it.}
+\CommentTok{def neg\_log\_likelihood(params, data):}
+\CommentTok{    return {-}log\_likelihood(params, data)}
+
+\CommentTok{initial\_guess = np.zeros(6)  \# 6 parameters: beta1, beta2, beta3, beta\_f, beta\_p, gamma}
+
+\CommentTok{\# Bounds for parameters: beta1, beta2, beta3, beta\_f, beta\_p, gamma}
+\CommentTok{bounds = [({-}np.inf, np.inf), ({-}np.inf, np.inf), ({-}np.inf, np.inf), ({-}np.inf, np.inf), ({-}np.inf, np.inf), (0, np.inf)]}
+
+\CommentTok{\# Minimize the negative log{-}likelihood function}
+\CommentTok{result = minimize(neg\_log\_likelihood, initial\_guess, args=(yogurt\_long,), bounds=bounds)}
+
+\CommentTok{\# Extract the MLEs}
+\CommentTok{mle\_params = result.x}
+\CommentTok{mle\_params\textquotesingle{}\textquotesingle{}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+'\nfrom scipy.optimize import minimize\n#create a function that returns the negative log liklihood of our function to minimize it.\ndef neg_log_likelihood(params, data):\n    return -log_likelihood(params, data)\n\ninitial_guess = np.zeros(6)  # 6 parameters: beta1, beta2, beta3, beta_f, beta_p, gamma\n\n# Bounds for parameters: beta1, beta2, beta3, beta_f, beta_p, gamma\nbounds = [(-np.inf, np.inf), (-np.inf, np.inf), (-np.inf, np.inf), (-np.inf, np.inf), (-np.inf, np.inf), (0, np.inf)]\n\n# Minimize the negative log-likelihood function\nresult = minimize(neg_log_likelihood, initial_guess, args=(yogurt_long,), bounds=bounds)\n\n# Extract the MLEs\nmle_params = result.x\nmle_params'
+\end{verbatim}
+
+\subsubsection{Discussion}\label{discussion}
+
+We learn\ldots{}
+
+\emph{todo: interpret the 3 product intercepts (which yogurt is most
+preferred?).}
+
+\emph{todo: use the estimated price coefficient as a dollar-per-util
+conversion factor. Use this conversion factor to calculate the dollar
+benefit between the most-preferred yogurt (the one with the highest
+intercept) and the least preferred yogurt (the one with the lowest
+intercept). This is a per-unit monetary measure of brand value.}
+
+One benefit of the MNL model is that we can simulate counterfactuals
+(eg, what if the price of yogurt 1 was \$0.10/oz instead of \$0.08/oz).
+
+\emph{todo: calculate the market shares in the market at the time the
+data were collected. Then, increase the price of yogurt 1 by \$0.10 and
+use your fitted model to predict p(y\textbar x) for each consumer and
+each product (this should be a matrix of \(N \times 4\) estimated choice
+probabilities. Take the column averages to get the new, expected market
+shares that result from the \$0.10 price increase to yogurt 1. Do the
+yogurt 1 market shares decrease?}
+
+\subsection{2. Estimating Minivan Preferences via Conjoint
+Analysis}\label{estimating-minivan-preferences-via-conjoint-analysis}
+
+\subsubsection{Data}\label{data}
+
+\emph{todo: download the dataset from here:} http://goo.gl/5xQObB
+
+\emph{todo: describe the data a bit. How many respondents took the
+conjoint survey? How many choice tasks did each respondent complete? How
+many alternatives were presented on each choice task? For each
+alternative.}
+
+The attributes (levels) were number of seats (6,7,8), cargo space (2ft,
+3ft), engine type (gas, hybrid, electric), and price (in thousands of
+dollars).
+
+\subsubsection{Model}\label{model}
+
+\emph{todo: estimate a MNL model omitting the following levels to avoide
+multicollinearity (6 seats, 2ft cargo, and gas engine). Include price as
+a continuous variable. Show a table of coefficients and standard errors.
+You may use your own likelihood function from above, or you may use a
+function from a package/library to perform the estimation.}
+
+\subsubsection{Results}\label{results}
+
+\emph{todo: Interpret the coefficients. Which features are more
+preferred?}
+
+\emph{todo: Use the price coefficient as a dollar-per-util conversion
+factor. What is the dollar value of 3ft of cargo space as compared to
+2ft of cargo space?}
+
+\emph{todo: assume the market consists of the following 6 minivans.
+Predict the market shares of each minivan in the market.}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+Minivan & Seats & Cargo & Engine & Price \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+A & 7 & 2 & Hyb & 30 \\
+B & 6 & 2 & Gas & 30 \\
+C & 8 & 2 & Gas & 30 \\
+D & 7 & 3 & Gas & 40 \\
+E & 6 & 2 & Elec & 40 \\
+F & 7 & 2 & Hyb & 35 \\
+\end{longtable}
+
+\emph{hint: this example is taken from the ``R 4 Marketing Research''
+book by Chapman and Feit. I believe the same example is present in the
+companion book titled ``Python 4 Marketing Research''. I encourage you
+to attempt these questions on your own, but if you get stuck or would
+like to compare you results to ``the answers,'' you may consult the
+Chapman and Feit books.}
+
+
+
+\end{document}

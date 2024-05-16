@@ -180,44 +180,87 @@ _todo: Update your likelihood or log-likelihood function with an additional argu
 
 ```{python}
 
-def poisson_loglikelihood(beta, X, Y):
-   lambda_values = np.exp(np.dot(X, beta))
-   log_likelihood = np.sum(-lambda_values + Y * np.log(lambda_values) - np.log(factorial(Y)))
-   return log_likelihood
+#def poisson_regression_loglikelihood(beta, X, Y):
+    #linear_predictor = np.dot(X, beta)
+    #lambda_value = np.exp(linear_predictor)
+    #log_likelihood = np.sum(-lambda_value + Y * np.log(lambda_value) - np.log(factorial(Y)))
+    
+    #return log_likelihood
 ```
 
 _todo: Use your function along with R's optim() or Python's sp.optimize() to find the MLE vector and the Hessian of the Poisson model with covariates. Specifically, the first column of X should be all 1's to enable a constant term in the model, and the subsequent columns should be age, age squared, binary variables for all but one of the regions, and the binary customer variable. Use the Hessian to find standard errors of the beta parameter estimates and present a table of coefficients and standard errors._
+```{python}
+#def poisson_regression_loglikelihood(beta, X, Y):
+    #linear_predictor = np.dot(X, beta)
+    #lambda_value = np.exp(linear_predictor)
+    #log_likelihood = -np.sum(lambda_value - Y * linear_predictor + np.log(factorial(Y)))
+    #return log_likelihood
 
+#def poisson_regression_gradient(beta, X, Y):
+    #linear_predictor = np.dot(X, beta)
+    #lambda_value = np.exp(linear_predictor)
+    #gradient = np.dot(X.T, lambda_value - Y)
+    #return gradient
+
+# Define the Hessian of the log-likelihood function
+#def poisson_regression_hessian(beta, X, Y):
+    #linear_predictor = np.dot(X, beta)
+    #lambda_value = np.exp(linear_predictor)
+    #diag_lambda = np.diag(lambda_value)
+    #hessian = np.dot(X.T, np.dot(diag_lambda, X))
+    #return hessian
+
+# Generate sample data (replace this with your actual data)
+X = blueprinty[['age', 'dummy__Midwest', 'dummy__Northeast', 'dummy__Northwest', 'dummy__South','dummy__Southwest', 'iscustomer']].copy()
+X['constant'] = 1  # constant column
+X['age_squared'] = X['age'] ** 2
+Y = blueprinty['patents']
+
+# Initial guess for beta
+#initial_beta = np.zeros(X.shape[1])
+
+# Optimize using minimize
+#result = minimize(poisson_regression_loglikelihood, initial_beta, args=(X.values, Y), jac=poisson_regression_gradient, hess=poisson_regression_hessian, method='trust-constr', options={'disp': True})
+
+# Extract MLE estimates
+#beta_mle = result.x
+
+# Compute standard errors using the inverse of the Hessian
+#covariance_matrix = np.linalg.inv(poisson_regression_hessian(beta_mle, X.values, Y))
+#standard_errors = np.sqrt(np.diag(covariance_matrix))
+
+# Print coefficients and standard errors
+#print("Coefficients:")
+#for i, coef in enumerate(beta_mle):
+    ##print(f"Beta_{i}: {coef:.4f} (SE: {standard_errors[i]:.4f})")
+```
 ```{python}
 from scipy.optimize import minimize
-def poisson_loglikelihood(beta, X, Y):
-   lambda_values = np.exp(np.dot(X, beta))
-   log_likelihood = np.sum(-lambda_values + Y * np.log(lambda_values) - np.log(factorial(Y)))
+
+#def poisson_regression_loglikelihood(beta, X, Y):
+    #linear_predictor = np.dot(X, beta)
+    #lambda_value = np.exp(linear_predictor)
+    #log_likelihood = np.sum(-lambda_value + Y * np.log(lambda_value) - np.log(factorial(Y)))
+    
+    #return log_likelihood
+
 # Define covariates matrix X 
-X = blueprinty[['age', 'dummy__Midwest', 'dummy__Northeast', 'dummy__Northwest', 'dummy__South','dummy__Southwest', 'iscustomer']]
-X['constant'] = 1  # constant column
-
+#X = blueprinty[['age', 'dummy__Midwest', 'dummy__Northeast', 'dummy__Northwest', 'dummy__South','dummy__Southwest', 'iscustomer']]
+#X['constant'] = 1  # constant column
+#X["age"] = X["age"].astype(int)
 # Create age squared column
-X['age_squared'] = X['age'] ** 2
+#X['age_squared'] = X['age'] ** 2
 
-# Create binary variables for regions
-regions = blueprinty['region'].unique()
-for region in regions[:-1]:
-    X[region] = (blueprinty['region'] == region).astype(int)
-
-# Drop one region to avoid multicollinearity, if it exists
-if regions[-1] in X.columns:
-    X.drop(columns=regions[-1], inplace=True)
 
 # Convert X and Y to numpy arrays
-X = X.values
-Y = blueprinty['patents'].values
+#X = X.values
+#Y = blueprinty['patents'].values
 
 # Initial guess for beta vector
-initial_beta = np.zeros(X.shape[1])
+#initial_beta = np.ones(X.shape[1])
 
 # Optimize the log-likelihood function using scipy.optimize
-#result = minimize(log_likelihood, initial_beta, args=(X, Y), method='BFGS')
+#result = minimize(poisson_regression_loglikelihood, initial_beta, args=(X, Y), method='BFGS')
 
 # MLE vector
 ##mle_vector = result.x
@@ -235,7 +278,7 @@ initial_beta = np.zeros(X.shape[1])
 _todo: Check your results using R's glm() function or Python sm.GLM() function._
 
 ```{python}
-import statsmodels.api as sm
+#import statsmodels.api as sm
 #X = blueprinty[['age', 'dummy__Midwest', 'dummy__Northeast', 'dummy__Northwest', 'dummy__South','dummy__Southwest', 'iscustomer']]
 #Y = blueprinty['patents'].values
 #model = sm.GLM(Y, X, family=sm.families.Poisson()).fit()

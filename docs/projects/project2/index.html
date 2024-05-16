@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Madeline Sands">
-<meta name="dcterms.date" content="2024-05-01">
+<meta name="dcterms.date" content="2024-05-09">
 
 <title>Madeline Sands - Poisson Regression Examples</title>
 <style>
@@ -221,7 +221,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 1, 2024</p>
+      <p class="date">May 9, 2024</p>
     </div>
   </div>
   
@@ -242,7 +242,7 @@ window.Quarto = {
 </section>
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
-<div id="8d44c486" class="cell" data-execution_count="1">
+<div id="fe0baa02" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
@@ -292,7 +292,7 @@ memory usage: 58.7+ KB
 4             False             False         False              True  </code></pre>
 </div>
 </div>
-<div id="01bd8224" class="cell" data-execution_count="2">
+<div id="1b6bfdd1" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>grouped <span class="op">=</span> blueprinty_df.groupby(<span class="st">'iscustomer'</span>)[<span class="st">'patents'</span>]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>means <span class="op">=</span> grouped.mean()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -324,7 +324,7 @@ memory usage: 58.7+ KB
 <p>It may be important to account for systematic differences in the age and regional location of customers vs non-customers. Therefore, we are going to examine the distribution of Blueprinty’s customers by regions and ages.</p>
 <section id="customers-by-region" class="level4">
 <h4 class="anchored" data-anchor-id="customers-by-region">Customers by Region</h4>
-<div id="9a474241" class="cell" data-execution_count="3">
+<div id="77bc2309" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>grouped <span class="op">=</span> blueprinty_df.groupby(<span class="st">'iscustomer'</span>)[<span class="st">'region'</span>]</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot histograms for each group</span></span>
@@ -350,7 +350,7 @@ memory usage: 58.7+ KB
 </section>
 <section id="customers-by-age" class="level4">
 <h4 class="anchored" data-anchor-id="customers-by-age">Customers by age</h4>
-<div id="bf09d15d" class="cell" data-execution_count="4">
+<div id="ac54bda4" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>grouped_age <span class="op">=</span> blueprinty_df.groupby(<span class="st">'iscustomer'</span>)[<span class="st">'age'</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>means_age <span class="op">=</span> grouped_age.mean()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot histograms for each group</span></span>
@@ -388,7 +388,7 @@ memory usage: 58.7+ KB
 <p>Next we want to take the natural log of the density and create the joint log-likelihood by adding the N log-densities together, which can be done due to log properties. Therefore, when we take the natural log of our liklihood function, we get <span class="math inline">\(\ln f(Y|\lambda) = \sum_{i=1}^{n} (-\lambda + x_i \ln(\lambda) - \ln(\lambda))\)</span> .</p>
 <p>Next we want to maximize our likelihood function. To find the maximum likelihood estimate of λ, we need to maximize the logarithm of the likelihood function with respect to λ. This can be done by taking the derivative of the log-likelihood function with respect to λ, setting it equal to zero, and solving for λ: <span class="math inline">\(\frac{d \ln L(\lambda)}{d\lambda} = 0\)</span></p>
 <p>Once we solve this function for λ, we have the parameter value that best fits the observed data according to the Poisson distribution.</p>
-<div id="28eab1d1" class="cell" data-execution_count="5">
+<div id="b769b6cb" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> factorial</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> poisson_loglikelihood(lambda_value, Y):</span>
@@ -396,7 +396,7 @@ memory usage: 58.7+ KB
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> log_likelihood</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>In python, we can create a function that takes our lambda value and Y and returns our log likelihood value.</p>
-<div id="3acf98e4" class="cell" data-execution_count="6">
+<div id="db53c3e0" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># number of patents</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> blueprinty_df[<span class="st">"patents"</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -421,7 +421,7 @@ memory usage: 58.7+ KB
 </div>
 </div>
 <p>When we take the first derivative of our function and set it equal to 0, we are able to solve for the value that maximizes our function. This is because the first derivative indicates a rate or slope, and we are looking for the point of our function that has a 0 slope i.e.&nbsp;some type of peak. From the graphical representation above, we can see that our function has a max somewhere between 2.5 and 5 for our lambda value, or approximately 3.</p>
-<div id="ec2c147b" class="cell" data-execution_count="7">
+<div id="b9af07d7" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> fsolve</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> poisson_loglikelihood_derivative(lambda_value, Y):</span>
@@ -444,73 +444,103 @@ memory usage: 58.7+ KB
 <h3 class="anchored" data-anchor-id="estimation-of-poisson-regression-model">Estimation of Poisson Regression Model</h3>
 <p>Next, we extend our simple Poisson model to a Poisson Regression Model such that <span class="math inline">\(Y_i = \text{Poisson}(\lambda_i)\)</span> where <span class="math inline">\(\lambda_i = \exp(X_i'\beta)\)</span>. The interpretation is that the success rate of patent awards is not constant across all firms (<span class="math inline">\(\lambda\)</span>) but rather is a function of firm characteristics <span class="math inline">\(X_i\)</span>. Specifically, we will use the covariates age, age squared, region, and whether the firm is a customer of Blueprinty.</p>
 <p><em>todo: Update your likelihood or log-likelihood function with an additional argument to take in a covariate matrix X. Also change the parameter of the model from lambda to the beta vector. In this model, lambda must be a positive number, so we choose the inverse link function g() to be exp() so that</em> <span class="math inline">\(\lambda_i = e^{X_i'\beta}\)</span>. <em>For example:</em></p>
-<div id="38b2ef98" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> poisson_loglikelihood(beta, X, Y):</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>   lambda_values <span class="op">=</span> np.exp(np.dot(X, beta))</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>   log_likelihood <span class="op">=</span> np.<span class="bu">sum</span>(<span class="op">-</span>lambda_values <span class="op">+</span> Y <span class="op">*</span> np.log(lambda_values) <span class="op">-</span> np.log(factorial(Y)))</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> log_likelihood</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="ded8747c" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#def poisson_regression_loglikelihood(beta, X, Y):</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#linear_predictor = np.dot(X, beta)</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">#lambda_value = np.exp(linear_predictor)</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#log_likelihood = np.sum(-lambda_value + Y * np.log(lambda_value) - np.log(factorial(Y)))</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">#return log_likelihood</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><em>todo: Use your function along with R’s optim() or Python’s sp.optimize() to find the MLE vector and the Hessian of the Poisson model with covariates. Specifically, the first column of X should be all 1’s to enable a constant term in the model, and the subsequent columns should be age, age squared, binary variables for all but one of the regions, and the binary customer variable. Use the Hessian to find standard errors of the beta parameter estimates and present a table of coefficients and standard errors.</em></p>
-<div id="98b0c868" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> poisson_loglikelihood(beta, X, Y):</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>   lambda_values <span class="op">=</span> np.exp(np.dot(X, beta))</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>   log_likelihood <span class="op">=</span> np.<span class="bu">sum</span>(<span class="op">-</span>lambda_values <span class="op">+</span> Y <span class="op">*</span> np.log(lambda_values) <span class="op">-</span> np.log(factorial(Y)))</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define covariates matrix X </span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> blueprinty[[<span class="st">'age'</span>, <span class="st">'dummy__Midwest'</span>, <span class="st">'dummy__Northeast'</span>, <span class="st">'dummy__Northwest'</span>, <span class="st">'dummy__South'</span>,<span class="st">'dummy__Southwest'</span>, <span class="st">'iscustomer'</span>]]</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>X[<span class="st">'constant'</span>] <span class="op">=</span> <span class="dv">1</span>  <span class="co"># constant column</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create age squared column</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>X[<span class="st">'age_squared'</span>] <span class="op">=</span> X[<span class="st">'age'</span>] <span class="op">**</span> <span class="dv">2</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create binary variables for regions</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>regions <span class="op">=</span> blueprinty[<span class="st">'region'</span>].unique()</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> region <span class="kw">in</span> regions[:<span class="op">-</span><span class="dv">1</span>]:</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    X[region] <span class="op">=</span> (blueprinty[<span class="st">'region'</span>] <span class="op">==</span> region).astype(<span class="bu">int</span>)</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop one region to avoid multicollinearity, if it exists</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> regions[<span class="op">-</span><span class="dv">1</span>] <span class="kw">in</span> X.columns:</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    X.drop(columns<span class="op">=</span>regions[<span class="op">-</span><span class="dv">1</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<div id="fea4d19f" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#def poisson_regression_loglikelihood(beta, X, Y):</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#linear_predictor = np.dot(X, beta)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">#lambda_value = np.exp(linear_predictor)</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#log_likelihood = -np.sum(lambda_value - Y * linear_predictor + np.log(factorial(Y)))</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#return log_likelihood</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#def poisson_regression_gradient(beta, X, Y):</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#linear_predictor = np.dot(X, beta)</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#lambda_value = np.exp(linear_predictor)</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#gradient = np.dot(X.T, lambda_value - Y)</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">#return gradient</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the Hessian of the log-likelihood function</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co">#def poisson_regression_hessian(beta, X, Y):</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#linear_predictor = np.dot(X, beta)</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">#lambda_value = np.exp(linear_predictor)</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#diag_lambda = np.diag(lambda_value)</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">#hessian = np.dot(X.T, np.dot(diag_lambda, X))</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#return hessian</span></span>
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert X and Y to numpy arrays</span></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> X.values</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> blueprinty[<span class="st">'patents'</span>].values</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial guess for beta vector</span></span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>initial_beta <span class="op">=</span> np.zeros(X.shape[<span class="dv">1</span>])</span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimize the log-likelihood function using scipy.optimize</span></span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="co">#result = minimize(log_likelihood, initial_beta, args=(X, Y), method='BFGS')</span></span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="co"># MLE vector</span></span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="co">##mle_vector = result.x</span></span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Hessian of the Poisson model</span></span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="co">#hessian = result.hess_inv</span></span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate standard errors of beta parameter estimates</span></span>
-<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="co">#se_beta = np.sqrt(np.diag(hessian))</span></span>
-<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Present a table of coefficients and standard errors</span></span>
-<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="co">#coefficients_table = pd.DataFrame({'Coefficients': mle_vector, 'Standard Errors': se_beta}, index=['constant', 'age', 'age_squared'] + list(regions[:-1]) + ['iscustomer'])</span></span>
-<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="co">#print(coefficients_table)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/bj/t618x2614s9c896326lrdjw40000gn/T/ipykernel_7182/3579629346.py:7: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-
-See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  X['constant'] = 1  # constant column
-/var/folders/bj/t618x2614s9c896326lrdjw40000gn/T/ipykernel_7182/3579629346.py:10: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-
-See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  X['age_squared'] = X['age'] ** 2</code></pre>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate sample data (replace this with your actual data)</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> blueprinty[[<span class="st">'age'</span>, <span class="st">'dummy__Midwest'</span>, <span class="st">'dummy__Northeast'</span>, <span class="st">'dummy__Northwest'</span>, <span class="st">'dummy__South'</span>,<span class="st">'dummy__Southwest'</span>, <span class="st">'iscustomer'</span>]].copy()</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>X[<span class="st">'constant'</span>] <span class="op">=</span> <span class="dv">1</span>  <span class="co"># constant column</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>X[<span class="st">'age_squared'</span>] <span class="op">=</span> X[<span class="st">'age'</span>] <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> blueprinty[<span class="st">'patents'</span>]</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial guess for beta</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="co">#initial_beta = np.zeros(X.shape[1])</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimize using minimize</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="co">#result = minimize(poisson_regression_loglikelihood, initial_beta, args=(X.values, Y), jac=poisson_regression_gradient, hess=poisson_regression_hessian, method='trust-constr', options={'disp': True})</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract MLE estimates</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="co">#beta_mle = result.x</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute standard errors using the inverse of the Hessian</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="co">#covariance_matrix = np.linalg.inv(poisson_regression_hessian(beta_mle, X.values, Y))</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="co">#standard_errors = np.sqrt(np.diag(covariance_matrix))</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Print coefficients and standard errors</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="co">#print("Coefficients:")</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="co">#for i, coef in enumerate(beta_mle):</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>    <span class="co">##print(f"Beta_{i}: {coef:.4f} (SE: {standard_errors[i]:.4f})")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div id="a9e60c53" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#def poisson_regression_loglikelihood(beta, X, Y):</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#linear_predictor = np.dot(X, beta)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#lambda_value = np.exp(linear_predictor)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">#log_likelihood = np.sum(-lambda_value + Y * np.log(lambda_value) - np.log(factorial(Y)))</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#return log_likelihood</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define covariates matrix X </span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#X = blueprinty[['age', 'dummy__Midwest', 'dummy__Northeast', 'dummy__Northwest', 'dummy__South','dummy__Southwest', 'iscustomer']]</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#X['constant'] = 1  # constant column</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#X["age"] = X["age"].astype(int)</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create age squared column</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#X['age_squared'] = X['age'] ** 2</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert X and Y to numpy arrays</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#X = X.values</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#Y = blueprinty['patents'].values</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial guess for beta vector</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co">#initial_beta = np.ones(X.shape[1])</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimize the log-likelihood function using scipy.optimize</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="co">#result = minimize(poisson_regression_loglikelihood, initial_beta, args=(X, Y), method='BFGS')</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co"># MLE vector</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="co">##mle_vector = result.x</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Hessian of the Poisson model</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="co">#hessian = result.hess_inv</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate standard errors of beta parameter estimates</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="co">#se_beta = np.sqrt(np.diag(hessian))</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Present a table of coefficients and standard errors</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="co">#coefficients_table = pd.DataFrame({'Coefficients': mle_vector, 'Standard Errors': se_beta}, index=['constant', 'age', 'age_squared'] + list(regions[:-1]) + ['iscustomer'])</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="co">#print(coefficients_table)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><em>todo: Check your results using R’s glm() function or Python sm.GLM() function.</em></p>
-<div id="375e70a6" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<div id="44c85e60" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import statsmodels.api as sm</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#X = blueprinty[['age', 'dummy__Midwest', 'dummy__Northeast', 'dummy__Northwest', 'dummy__South','dummy__Southwest', 'iscustomer']]</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Y = blueprinty['patents'].values</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#model = sm.GLM(Y, X, family=sm.families.Poisson()).fit()</span></span>
@@ -559,7 +589,7 @@ Variable Definitions
 <p>Here, we have been provided with 40,000 Airbnb listings from New York City. We are assuming that the number os reviews are a good proxy for the number of bookings on the Airbnb platform. Our goal is going to attempt to find the number of bookings an airbnb listing has via a function of the number of reviews the airbnb listing has received.</p>
 <section id="data-1" class="level3">
 <h3 class="anchored" data-anchor-id="data-1">Data</h3>
-<div id="cd41299c" class="cell" data-execution_count="11">
+<div id="d81a45e0" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -615,7 +645,7 @@ memory usage: 4.0+ MB</code></pre>
 </div>
 <p>We will first conduct some exploratory data analysis to get a feel for the data. From <code>airbnb.info()</code> we see that we have 13 variables in our dataframe with the max number of rows being 40628. There do be some missing values, such as in <code>bedrooms</code>, <code>host_since</code>, <code>review_scores_cleanliness</code>, <code>review_scores_location</code>, and <code>review_scores_value</code>.</p>
 <p>First, we want to examine the distribution of <code>room_type</code> by the number of reviews <code>number_of_reviews</code>.</p>
-<div id="5714b56b" class="cell" data-execution_count="12">
+<div id="60217767" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>airbnb_room <span class="op">=</span> airbnb[[<span class="st">'room_type'</span>]]</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>plt.hist(airbnb_room, bins<span class="op">=</span><span class="dv">20</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Airbnb Room Type and Number of Reviews'</span>)</span>
@@ -625,13 +655,13 @@ memory usage: 4.0+ MB</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-13-output-1.png" width="629" height="449" class="figure-img"></p>
+<p><img src="index_files/figure-html/cell-14-output-1.png" width="629" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>As we can see, Airbnb tends to have either private rooms and entire homes or apts. There is not much information on shared rooms on the Airbnb platform.</p>
-<div id="38ffbb76" class="cell" data-execution_count="13">
+<div id="2567b517" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>airbnb_price <span class="op">=</span> airbnb[[<span class="st">'price'</span>]]</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>x_range <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">2200</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.hist(airbnb_price, <span class="bu">range</span> <span class="op">=</span>x_range, bins<span class="op">=</span><span class="dv">100</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
@@ -643,24 +673,24 @@ memory usage: 4.0+ MB</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-14-output-1.png" width="601" height="449" class="figure-img"></p>
+<p><img src="index_files/figure-html/cell-15-output-1.png" width="601" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>The price of airbnb listing’s range from close to 0 all the way up to 2000 per night. The most common price seems to be around $100/night. Additionally, because we are missing some variables from the price column, we want to potentially fill in the missing information to run a logistic regression from this data.</p>
-<div id="691d98ed" class="cell" data-execution_count="14">
+<div id="329c0157" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sns.pairplot(airbnb[[<span class="st">'bathrooms'</span>, <span class="st">'bedrooms'</span>, <span class="st">'price'</span>, <span class="st">'number_of_reviews'</span>]])</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-15-output-1.png" width="946" height="947" class="figure-img"></p>
+<p><img src="index_files/figure-html/cell-16-output-1.png" width="946" height="947" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="a2ee0d32" class="cell" data-execution_count="15">
+<div id="caec9409" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyrsm <span class="im">as</span> rsm</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>mapping <span class="op">=</span> {<span class="st">"t"</span>: <span class="dv">1</span>, <span class="st">"f"</span>: <span class="dv">0</span>}</span>
@@ -686,8 +716,8 @@ Model:                            GLM   Df Residuals:                    30132
 Model Family:                 Poisson   Df Model:                            7
 Link Function:                    Log   Scale:                          1.0000
 Method:                          IRLS   Log-Likelihood:            -5.2905e+05
-Date:                Wed, 01 May 2024   Deviance:                   9.3672e+05
-Time:                        22:05:57   Pearson chi2:                 1.41e+06
+Date:                Thu, 09 May 2024   Deviance:                   9.3672e+05
+Time:                        18:59:35   Pearson chi2:                 1.41e+06
 No. Iterations:                     6   Pseudo R-squ. (CS):             0.5518
 Covariance Type:            nonrobust                                         
 =============================================================================================
