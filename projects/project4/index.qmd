@@ -1,0 +1,366 @@
+---
+title: "Key Drivers Analysis"
+author: "Madeline Sands"
+date: "2024-05-26"
+callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
+editor_options: 
+  chunk_output_type: console
+---
+
+This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that payment card.
+
+## 1. Background on Variable Importance and Key Drivers Analysis
+Variable importance and Key Drivers Analysis are often used in conjunction when determining which variables contribute the most to a model's predictive power. Different supervised machine learning models use various methods to calculate variable importance, with the same goal of trying to see which explanatory variable has the greatest impact on our response variable. We will review these different methods to identify variable importance below and implement them using a dataset examining customer satisfaction with a payment card.
+
+### Key Driver Analysis Methods from Linear Regression Models
+#### Pearsons Correlation
+In linear regression models, key drivers can be identified via the change in the value of the Pearson Correlation Coefficient. Pearson's correlation coefficient is a measure used to quantify the linear relationship between two variables, and ranges from -1 to +1. A coefficient of +1 indicates a perfect positive linear relationship whereas -1 indicates a perfect negative linear relationship. 0 indicates no linear correlation.
+
+Suppose we have 3 explanatory variables as part of our linear regression model. We can remove one variable at a time and recalculate our `corr()` value. Features with high absolute values of the correlation coefficient (close to 1 or -1) are likely more important to our models predictive power because they have a strong linear relationship with the target variable. The sign can also indicate the direction of the relationship. A positive sign means that as the feature increases, the target increases and vice versa for the negative sign. We can use the correlation coefficient to rank the features based on the absolute value of their respective coefficients, thus features with higher absolute values are generally more influential in predicting the target variable in a linear regression context.
+
+However, it is critical to note that while strong correlations with the target variable are important, it's also crucial to check the correlations between features. High correlation between features, i.e. multicollinearity, can affect the model's stability and the interpretation of the coefficients.
+
+#### Usefullness
+Usefulnes is another measure derived from linear regression models. "Usefulness" or ${\Delta}R^2$, measures the impact of individual features on the performance of a regression model by observing how the model's $R^2$ value changes when a feature is dropped. This technique is valuable because it can reveal the contribution of a specific feature to the overall explanatory power of the model, beyond a simple correlation. It is also a relatively straightforward to run. 
+
+However, there are some considerations to take into account when using the ${\Delta}R^2$ to evaluate key drivers, specifically relating to interactions and non-linearity between the features. The change in $R^2$ doesn't account for interactions between features unless specifically modeled. Therefore, if there is an interaction between 2 variables, that would have to be explicilty included in a linear regression model for it to have an impact on the $R^2$ value. Also, non-linear relationships might not be captured effectively. If features are highly correlated, removing one might not show a significant change in $R^2$ because its effect is being captured by the correlated features. 
+
+### Methods Derived from Game Theory
+
+#### Shapley Values
+Shapley values are a concept derived from cooperative game theory used to fairly allocate the "payout" among players depending on their contribution to the total game. In the context of machine learning, Shapley values can be used to explain the contribution of each feature to the model's prediction. Shapley values provide a detailed breakdown of how each feature contributes to the final prediction, which can often be more insightful than measures like the pearsons coefficients or ${\Delta}R^2$.
+
+
+#### Johnson's Relative weights
+Johnson's relative weights analysis is a statistical technique used to determine the importance of predictor variables in a regression model, especially when dealing with multicollinearity among predictors. This method decomposes the total variance explained by the model into portions attributable to each predictor, taking into account the intercorrelations among them.
+
+Johnson's relative weights transform the raw regression coefficients by considering the correlation matrix of the predictors. The result is a set of weights that reflect the contribution of each predictor to the model’s predictive power, adjusted for overlaps due to correlations among predictors. 
+
+Johnson's weights provide a more nuanced view of feature importance than simple correlation or regression coefficients alone, particularly useful in models where predictors are not independent.
+
+### Methods Derived from Decision Trees and Ensemble Models
+#### Decision Trees and Gini Importance
+In Decision Trees and Ensemeble Models (such as Random Forest or Gradient boosting) methods such as **Gini Importance** and **Permutation Importance** are used to determine this varibale importance. **Gini Importance** - Measures how much each feature decreases the impurity in a decision tree, averaged over all trees in the ensemble. **Permutation Importance** - Measures the decrease in model performance (such as via accuracy or Root mean squared error) when the values of a feature are randomly shuffled, breaking the relationship between the feature and the target. 
+
+By understanding variable importance and conducting key drivers analysis, organizations can make data-driven decisions, prioritize resources, and develop strategies that target the most impactful factors.
+
+
+### 2. Data processing 
+```{python}
+import numpy as np 
+import pandas as pd 
+import pyrsm as rsm 
+from sklearn.linear_model import LinearRegression
+from scipy.stats import pearsonr
+import statsmodels.api as sm
+import shap
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+import seaborn as sns
+import matplotlib.pyplot as plt 
+from textwrap import wrap
+
+
+driver_analysis = pd.read_csv('data/data_for_drivers_analysis.csv')
+driver_analysis.head(10)
+
+```
+
+We are now going to see these methods in action. We are using a database that has 2553 observations across 9 variables, with the response variable being the `satisfaction` score. The following regressors are all binary variables:
+
+- `trust` - Is offered by a brand I trust
+- `build` - Helps build credit quickly
+- `differs` - Is different from other cards
+- `easy` - Is easy to use
+- `appealing` - Has appealing benefits or rewards
+- `rewarding` - Rewards me for responsible usage
+- `popular`- Is used by a lot of people
+- `service` - Provides outstanding customer service
+- `impact` - Makes a difference in my life
+
+Respondents were asked to respond `yes` or `no` to 9 questions related to attributes of a payment card. They then provided an overall satisfaction score from 1-5. We will use the methods above to determine which attributes contribute the highest to respondents overall satisfaction of the payment cards.
+
+Before we demonstrate differences in the relative importance values, we need to first assess the multicollinearity between the variables. Due to the **Halo Effect**, we see that respondents tend to rate something higher on all attributes if they like a brand, but also rate something lower on all attributes if they dislike a brand. Therefore, we often see that in perception datasets, there is a high level of multicollinearity. Below, we will run a correlation matrix to see which variables are highly correlated with each other. 
+
+
+```{python}
+correlation_matrix = driver_analysis.corr()
+print(correlation_matrix)
+```
+
+
+#### Pearson Correlation
+
+```{python}
+# Standardizing the Driver Analysis Dataframe
+da_standardized = driver_analysis.copy().iloc[:, 2:12]
+da_standardized = (da_standardized - da_standardized.mean()) / da_standardized.std()
+da_standardized.head()
+
+#breaking out our Predictor and Dependent variables
+X_standardized = da_standardized[["trust", "build", "differs", "easy", "appealing", "rewarding", "popular", "service", "impact"]]
+y_standardized = da_standardized['satisfaction']
+
+#Fit a linear regression model
+model = LinearRegression()
+model.fit(X_standardized,y_standardized)
+
+#extract out coefficients and intercept from our linear regression model
+coefficients = model.coef_
+intercept = model.intercept_
+```
+
+
+```{python}
+#Creating an empty dictionary to store our coefficients in 
+pearson_corr_matrix = {}
+
+#extracting one coefficient at a time to calculate the correlation value of
+for column in da_standardized.columns:
+    if column != 'satisfaction':
+        corr, _ = pearsonr(da_standardized[column], da_standardized['satisfaction'])
+        pearson_corr_matrix[column] = corr
+
+total_sum = sum(pearson_corr_matrix.values())
+percentage_data = {}
+# Calculate and print the percentage of the sum for each value
+for key, value in pearson_corr_matrix.items():
+    percentage = (value / total_sum) * 100
+    percentage_data[key] = percentage
+
+# Convert the new dictionary to a DataFrame
+pearson_corr_df = pd.DataFrame(list(percentage_data.items()), columns=['Features', 'Pearson_corr_%'])
+
+pearson_corr_df["Pearson_corr_%"] = pearson_corr_df["Pearson_corr_%"].round(1)
+
+print(pearson_corr_df)
+```
+
+
+#### Standardized Regression Coefficients
+
+```{python}
+X_unstandardized = driver_analysis[["trust", "build", "differs", "easy", "appealing", "rewarding", "popular", "service", "impact"]]
+y_unstandardized = driver_analysis['satisfaction']
+
+model_SLC = LinearRegression()
+model_SLC.fit(X_unstandardized, y_unstandardized)
+standardized_coefficients = model_SLC.coef_
+SLC_coefficients_df = pd.DataFrame({'Predictor': X_standardized.columns, 'Standardized Coefficient': standardized_coefficients})
+
+total_sum_regression_coef = SLC_coefficients_df["Standardized Coefficient"].sum()
+
+
+SLC_coefficients_df['SLC_Percent of Total'] = (SLC_coefficients_df['Standardized Coefficient'] / total_sum_regression_coef) * 100
+
+SLC_coefficients_df["SLC_Percent of Total"] = SLC_coefficients_df["SLC_Percent of Total"].round(1)
+print(SLC_coefficients_df)
+
+SLC_df = SLC_coefficients_df[["Predictor", "SLC_Percent of Total"]]
+```
+
+#### Shapley Values for a linear regression
+
+```{python}
+from sklearn.model_selection import train_test_split
+
+# Fit the linear regression model
+model_shapley = LinearRegression()
+model_shapley.fit(X_standardized, y_standardized)
+
+# Initialize the explainer
+explainer = shap.Explainer(model_shapley.predict, X_standardized)
+
+# Calculate Shapley values
+shap_values = explainer(X_standardized)
+
+# Plot Shapley values (if needed)
+shap.summary_plot(shap_values, X_standardized)
+```
+
+```{python}
+# Sum up the absolute values of Shapley values for each feature
+feature_importance = np.sum(shap_values.values, axis=0)
+
+# Calculate the total sum of all Shapley values
+total_importance = np.sum(np.abs(feature_importance))
+
+# Compute the percentage contribution of each feature
+percentage_contributions = 100 * feature_importance / total_importance
+
+percental_total = percentage_contributions.sum()
+print(percental_total)
+# Create a DataFrame to display the results
+shapley_df = pd.DataFrame({
+    'Feature': X_unstandardized.columns,
+    'feature_importance': feature_importance,
+    'Shapley Value Sum': total_importance,
+    'Shapley_percent_Total': percentage_contributions
+})
+
+shapley_df["Shapley_percent_Total"] = shapley_df["Shapley_percent_Total"].round(1)
+print(shapley_df)
+shapley_df_short = shapley_df[["Feature", "Shapley_percent_Total"]]
+```
+
+
+#### Usefulness
+```{python}
+X_full = sm.add_constant(X_unstandardized)  # Adding a constant term for the intercept
+model_full = sm.OLS(y_unstandardized, X_full).fit()
+r2_full = model_full.rsquared
+
+# Calculating Delta R^2 for each feature
+delta_r2 = {}
+for feature in X_unstandardized.columns:
+    X_reduced = sm.add_constant(X_unstandardized.drop(columns=[feature]))  # Reduced model without the feature
+    model_reduced = sm.OLS(y_unstandardized, X_reduced).fit()
+    r2_reduced = model_reduced.rsquared
+    delta_r2[feature] = r2_full - r2_reduced
+
+# Output Delta R^2 values
+delta_r2_df = pd.DataFrame(delta_r2.items(), columns =["feature", "Delta R^2"])
+
+
+sum_r2 = delta_r2_df["Delta R^2"].sum()
+
+delta_r2_df["Usefulness %"] = delta_r2_df["Delta R^2"] / sum_r2 * 100
+delta_r2_df["Usefulness %"] = delta_r2_df["Usefulness %"].round(2)
+
+usefulness_df = delta_r2_df[["feature", "Usefulness %"]]
+```
+
+
+#### Johnson's relative weights (Epsilon)
+```{python}
+# Fit a linear regression model
+model = LinearRegression()
+model.fit(X_unstandardized, y_unstandardized)
+r_squared = model.score(X_unstandardized, y_unstandardized)
+
+# Get the correlation matrix of the standardized predictors
+R = np.corrcoef(X_unstandardized, rowvar=False)
+
+# Eigen decomposition
+eigenvalues, eigenvectors = np.linalg.eig(R)
+
+# Compute the relative importance
+relative_importance = eigenvectors**2 * eigenvalues[:, np.newaxis]
+relative_contributions = relative_importance.sum(axis=0)
+normalized_weights = relative_contributions / relative_contributions.sum()
+normalized_sum = normalized_weights.sum()
+
+# Calculate the proportional contributions to R-squared
+proportional_contributions = normalized_weights * r_squared
+
+# Display the results
+results = pd.DataFrame({
+    'Feature': X_unstandardized.columns,
+    'Relative Contribution': proportional_contributions,
+    'Johnsons Epsilon': normalized_weights*100
+})
+
+results["Johnsons Epsilon"] = results["Johnsons Epsilon"].round(2)
+johnsons_df = results[["Feature", "Johnsons Epsilon"]]
+
+```
+
+
+#### Mean Decrease in the Gini Coefficient from a Random Forest
+```{python}
+X_train, X_test, y_train, y_test = train_test_split(X_unstandardized, y_unstandardized, test_size=0.2, random_state=42)
+
+rf = RandomForestClassifier(n_estimators=1000, random_state=42, criterion='gini')
+
+# Train the model
+rf.fit(X_train, y_train)
+
+# Extract feature importances (Mean Decrease in Gini)
+feature_importances = rf.feature_importances_
+
+# Create a DataFrame to hold the feature importances
+features = X_unstandardized.columns
+importance_df = pd.DataFrame({
+    'Feature': features,
+    'Importance': feature_importances
+})
+
+# Sort the DataFrame by importance
+importance_df = importance_df.sort_values(by='Importance', ascending=False)
+
+importance_df["Importance_percentage"] = (importance_df["Importance"] / importance_df["Importance"].sum()) * 100
+importance_df["gini_percent"] = importance_df["Importance_percentage"].round(2)
+gini_index = importance_df[["Feature", "gini_percent"]]
+
+```
+
+
+### 3. Key Driver Analysis and Interpretation
+```{python}
+#Merging all of the dataframes together
+#Merging Pearsons with Standardized Linear Coefficient
+merged_df = pd.merge(pearson_corr_df, SLC_df, left_on = 'Features', right_on = 'Predictor', how = 'left')
+#Merging on Shapley Percents
+merged_df = pd.merge(merged_df,shapley_df_short, left_on = 'Features', right_on = 'Feature', how = 'left')
+#Merging on Usefulness Percentages
+merged_df = pd.merge(merged_df,usefulness_df, left_on = 'Features', right_on = 'feature', how = 'left')
+#Merging on Johnsons Percentages
+merged_df = pd.merge(merged_df,johnsons_df, left_on = 'Features', right_on = 'Feature', how = 'left')
+#Merging on Gini Index %
+merged_df = pd.merge(merged_df,gini_index, left_on = 'Features', right_on = 'Feature', how = 'left')
+
+#dropping redundant columns and setting the new index
+merged_df.drop(columns=["Predictor", "Feature_x", "feature", "Feature_y", "Feature"], inplace=True)
+merged_df.set_index('Features', inplace=True)
+```
+
+
+```{python}
+import seaborn as sns
+import matplotlib.pyplot as plt 
+from textwrap import wrap
+
+```
+
+
+```{python}
+column_aliases1 = {
+    'Pearson_corr_%': 'Pearson Correlations',
+    'SLC_Percent of Total': ' Regression Coeff.',
+    'Shapley_percent_Total': 'Shapley Values',
+    'Usefulness %': '"Usefulness"',
+    'Johnsons Epsilon': "Johnson's Epsilon",
+    'gini_percent': 'Decrease - RF Gini'
+}
+
+merged_df.rename(columns=column_aliases1, inplace=True)
+
+```
+
+```{python}
+print(merged_df)
+# Creating the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(merged_df, annot=True, cmap='cividis', fmt=".2f")
+plt.xticks(rotation=45)
+plt.title('Key Driver Analysis: Feature Percentages')
+plt.show()
+
+```
+
+Above is the table recreation showing the importance scores for various features across different driver analysis methods, each normalized as percentages. These methods help us understand which features most significantly affect the predictive power of a model. We can review each column and identify the most important features as determined by each respective method. 
+
+- **Pearson Correlations**: This column reflects the linear correlation between each feature and our target variable, `satisfaction`. Higher values indicate a stronger linear relationship. Features like `trust`, `service`, and `impact` show relatively high correlation, suggesting these are important in a linear sense.
+
+- **Regression Coefficients**: These scores are derived from a regression model, showing how much the target variable changes with a one-unit change in the feature, all else being equal. `Impact`, `trust`, and `service`, have higher coefficients, indicating significant influence on the model output.
+
+- **Shapley Values**: This method distributes the prediction value among the features, attributing the impact of each feature on the outcome of the model. Again, `Impact`, `trust`, and `service` score high, underscoring their importance in contributing to model predictions.
+
+- **"Usefulness"**: This value identifies impactful features via their respective change in the $R^2$ value. `Impact` and `trust` show exceptionally high values, highlighting their critical role.
+
+- **Johnson's Epsilon**: This metric likely measures the change in predictability when a feature is altered. "Differs", "easy", and "service" show higher values, suggesting these features significantly impact model predictability.
+
+- **Decrease - RF Gini**: Derived from Random Forests, this shows the decrease in node impurity (Gini index) brought by each feature. "Popular", "rewarding", and "easy" have higher values, indicating their utility in improving model decisions through increased purity in node splits.
+
+Based on the heatmap and table created above, we see that there are three overall high impact features. `Impact`, `trust`, and `service` consistently show high importance across multiple metrics, suggesting they are crucial for accurate predictions. Features like `easy`, `differs`, and `appealing` exhibit moderate importance scores across various methods, indicating they play a secondary yet meaningful role in model predictions.`Rewarding` and `popular`, despite their roles, seem to have less influence compared to other features, particularly in metrics outside the Decrease - RF Gini.
+

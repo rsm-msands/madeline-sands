@@ -23,5 +23,8 @@
   "projects/project3/index.qmd": {
     "index.html": "2e2b59de",
     "index.tex": "f8748da9"
+  },
+  "projects/project4/index.qmd": {
+    "index.html": "6565c072"
   }
 }
