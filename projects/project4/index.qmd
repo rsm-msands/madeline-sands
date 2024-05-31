@@ -7,36 +7,40 @@ editor_options:
   chunk_output_type: console
 ---
 
-This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that payment card.
+This post explains and implements a few measures of variable importance for features of a payment card and their impact on customer satisfaction with that payment card.
 
 ## 1. Background on Variable Importance and Key Drivers Analysis
-Variable importance and Key Drivers Analysis are often used in conjunction when determining which variables contribute the most to a model's predictive power. Different supervised machine learning models use various methods to calculate variable importance, with the same goal of trying to see which explanatory variable has the greatest impact on our response variable. We will review these different methods to identify variable importance below and implement them using a dataset examining customer satisfaction with a payment card.
+Variable importance and key drivers analysis are often used in conjunction when determining which variables contribute the most to a model's predictive power. Different supervised machine learning models use various methods to calculate variable importance, with the same goal of trying to see which explanatory variable has the greatest impact on the response variable. We will review these different methods to identify variable importance below and implement them using a dataset examining customer satisfaction with a payment card.
 
 ### Key Driver Analysis Methods from Linear Regression Models
 #### Pearsons Correlation
-In linear regression models, key drivers can be identified via the change in the value of the Pearson Correlation Coefficient. Pearson's correlation coefficient is a measure used to quantify the linear relationship between two variables, and ranges from -1 to +1. A coefficient of +1 indicates a perfect positive linear relationship whereas -1 indicates a perfect negative linear relationship. 0 indicates no linear correlation.
+In linear regression models, key drivers can be identified via the change in the value of the **Pearson Correlation Coefficient**. Pearson's correlation coefficient is a measure used to quantify the linear relationship between two variables, and ranges from -1 to +1. A coefficient of +1 indicates a perfect positive linear relationship whereas -1 indicates a perfect negative linear relationship. 0 indicates no linear correlation.
 
-Suppose we have 3 explanatory variables as part of our linear regression model. We can remove one variable at a time and recalculate our `corr()` value. Features with high absolute values of the correlation coefficient (close to 1 or -1) are likely more important to our models predictive power because they have a strong linear relationship with the target variable. The sign can also indicate the direction of the relationship. A positive sign means that as the feature increases, the target increases and vice versa for the negative sign. We can use the correlation coefficient to rank the features based on the absolute value of their respective coefficients, thus features with higher absolute values are generally more influential in predicting the target variable in a linear regression context.
+Suppose we have 3 explanatory variables as part of our linear regression model. We can remove one variable at a time and recalculate our Pearson's Correlation value. Features with high absolute values of the correlation coefficient (close to 1 or -1) are likely more important to our model's predictive power because they have a strong linear relationship with the target variable. The sign can also indicate the direction of the relationship. A positive sign means that as the feature increases, the target increases and vice versa for the negative sign. We can use the correlation coefficient to rank the features based on the absolute value of their respective coefficients, thus features with higher absolute values are generally more influential in predicting the target variable in a linear regression context.
+
+When calculating Pearon's we take the covariance of 2 variables, and divide it by the product of their standard deviations. This formula inherently standardizes the covariance, meaning that Pearson's correlation coefficient itself is already a standardized measure. Therefore, when implementing pearson's, you do not need to standardize your data before finding the coefficient values. 
 
 However, it is critical to note that while strong correlations with the target variable are important, it's also crucial to check the correlations between features. High correlation between features, i.e. multicollinearity, can affect the model's stability and the interpretation of the coefficients.
 
 #### Usefullness
 Usefulnes is another measure derived from linear regression models. "Usefulness" or ${\Delta}R^2$, measures the impact of individual features on the performance of a regression model by observing how the model's $R^2$ value changes when a feature is dropped. This technique is valuable because it can reveal the contribution of a specific feature to the overall explanatory power of the model, beyond a simple correlation. It is also a relatively straightforward to run. 
 
-However, there are some considerations to take into account when using the ${\Delta}R^2$ to evaluate key drivers, specifically relating to interactions and non-linearity between the features. The change in $R^2$ doesn't account for interactions between features unless specifically modeled. Therefore, if there is an interaction between 2 variables, that would have to be explicilty included in a linear regression model for it to have an impact on the $R^2$ value. Also, non-linear relationships might not be captured effectively. If features are highly correlated, removing one might not show a significant change in $R^2$ because its effect is being captured by the correlated features. 
+However, there are some considerations to take into account when using the ${\Delta}R^2$ to evaluate key drivers, specifically relating to interactions and non-linearity between the features, similar to Pearson's. The change in $R^2$ doesn't account for interactions between features unless specifically modeled. Therefore, if there is an interaction between 2 variables, that would have to be explicilty included in a linear regression model for it to have an impact on the $R^2$ value. Also, non-linear relationships might not be captured effectively. If features are highly correlated, removing one might not show a significant change in $R^2$ because its effect is being captured by the correlated features. 
 
 ### Methods Derived from Game Theory
 
 #### Shapley Values
 Shapley values are a concept derived from cooperative game theory used to fairly allocate the "payout" among players depending on their contribution to the total game. In the context of machine learning, Shapley values can be used to explain the contribution of each feature to the model's prediction. Shapley values provide a detailed breakdown of how each feature contributes to the final prediction, which can often be more insightful than measures like the pearsons coefficients or ${\Delta}R^2$.
 
+When computing Shapley values, the need to standardize data before computing Shapley values largely depends on the type of predictive model used. For linear regression models, standardizing might not be necessary for interpreting the contribution of features, as the model is fairly transparent and the contribution of features can be directly observed from the regression coefficients. However, if we are running and creating more complex models like neural networks or ensemble models (e.g., random forests, gradient boosting machines), standardizing features can help in comparing their contributions on a common scale, especially if the features vary widely in scale and units.
+Finally, regardless of the model, standardizing features can make the interpretation of Shapley values more straightforward across different features. When features are on the same scale, their Shapley values are easier to compare, as no single feature will dominate simply because of differences in scale.
 
 #### Johnson's Relative weights
 Johnson's relative weights analysis is a statistical technique used to determine the importance of predictor variables in a regression model, especially when dealing with multicollinearity among predictors. This method decomposes the total variance explained by the model into portions attributable to each predictor, taking into account the intercorrelations among them.
 
-Johnson's relative weights transform the raw regression coefficients by considering the correlation matrix of the predictors. The result is a set of weights that reflect the contribution of each predictor to the model’s predictive power, adjusted for overlaps due to correlations among predictors. 
+Johnson's relative weights transform the raw regression coefficients by considering the correlation matrix of the predictors and results in a set of weights that reflect the contribution of each predictor to the model’s predictive power. Johnson's weights provide a more nuanced view of feature importance than simple correlation or regression coefficients alone, particularly useful in models where predictors are not independent. 
 
-Johnson's weights provide a more nuanced view of feature importance than simple correlation or regression coefficients alone, particularly useful in models where predictors are not independent.
+When computing Johnson's relative weights, it is generally recommended to standardize the variables. Standardization ensures that each predictor contributes to the regression model on a comparable scale. This is crucial because Johnson's Relative Weights are used to interpret the proportion of explained variance in the dependent variable that can be attributed to each independent variable. If the variables are not standardized, their weights might reflect their scale rather than their actual contribution to the model. Standardization removes this disparity, allowing a fair assessment of each variable’s relative importance based on their contribution to the model's predictive power rather than their scale.
 
 ### Methods Derived from Decision Trees and Ensemble Models
 #### Decision Trees and Gini Importance
@@ -44,6 +48,7 @@ In Decision Trees and Ensemeble Models (such as Random Forest or Gradient boosti
 
 By understanding variable importance and conducting key drivers analysis, organizations can make data-driven decisions, prioritize resources, and develop strategies that target the most impactful factors.
 
+When creating decision trees and computing the Gini Importance, standardizing the data beforehand is not necessary and generally doesn't enhance the performance or interpretability of the model.
 
 ### 2. Data processing 
 ```{python}
@@ -192,7 +197,7 @@ percental_total = percentage_contributions.sum()
 print(percental_total)
 # Create a DataFrame to display the results
 shapley_df = pd.DataFrame({
-    'Feature': X_unstandardized.columns,
+    'Feature': X_standardized.columns,
     'feature_importance': feature_importance,
     'Shapley Value Sum': total_importance,
     'Shapley_percent_Total': percentage_contributions
@@ -255,13 +260,14 @@ proportional_contributions = normalized_weights * r_squared
 
 # Display the results
 results = pd.DataFrame({
-    'Feature': X_unstandardized.columns,
+    'Feature': X_standardized.columns,
     'Relative Contribution': proportional_contributions,
     'Johnsons Epsilon': normalized_weights*100
 })
 
 results["Johnsons Epsilon"] = results["Johnsons Epsilon"].round(2)
 johnsons_df = results[["Feature", "Johnsons Epsilon"]]
+print(johnsons_df)
 
 ```
 
@@ -341,7 +347,7 @@ merged_df.rename(columns=column_aliases1, inplace=True)
 print(merged_df)
 # Creating the heatmap
 plt.figure(figsize=(10, 8))
-sns.heatmap(merged_df, annot=True, cmap='cividis', fmt=".2f")
+sns.heatmap(merged_df, annot=True, cmap='viridis', fmt=".2f")
 plt.xticks(rotation=45)
 plt.title('Key Driver Analysis: Feature Percentages')
 plt.show()
@@ -362,5 +368,5 @@ Above is the table recreation showing the importance scores for various features
 
 - **Decrease - RF Gini**: Derived from Random Forests, this shows the decrease in node impurity (Gini index) brought by each feature. "Popular", "rewarding", and "easy" have higher values, indicating their utility in improving model decisions through increased purity in node splits.
 
-Based on the heatmap and table created above, we see that there are three overall high impact features. `Impact`, `trust`, and `service` consistently show high importance across multiple metrics, suggesting they are crucial for accurate predictions. Features like `easy`, `differs`, and `appealing` exhibit moderate importance scores across various methods, indicating they play a secondary yet meaningful role in model predictions.`Rewarding` and `popular`, despite their roles, seem to have less influence compared to other features, particularly in metrics outside the Decrease - RF Gini.
+Based on the heatmap and table created above, we see that there are three overall high impact features. `Impact`, `trust`, and `service` consistently show high importance across multiple metrics, suggesting they are crucial for accurate predictions. Features like `easy`, `differs`, and `appealing` exhibit moderate importance scores across various methods, indicating they play a secondary yet meaningful role in model predictions.`Rewarding` and `popular`, despite their roles, seem to have less influence compared to other features, particularly in metrics outside the Decrease - RF Gini. In this assignment, we were trying to recreate the table in slide 19. Despite not getting the exact same numbers, I did get the same ordering of important features.
 

@@ -229,22 +229,23 @@ window.Quarto = {
 </header>
 
 
-<p>This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that payment card.</p>
+<p>This post explains and implements a few measures of variable importance for features of a payment card and their impact on customer satisfaction with that payment card.</p>
 <section id="background-on-variable-importance-and-key-drivers-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="background-on-variable-importance-and-key-drivers-analysis">1. Background on Variable Importance and Key Drivers Analysis</h2>
-<p>Variable importance and Key Drivers Analysis are often used in conjunction when determining which variables contribute the most to a model’s predictive power. Different supervised machine learning models use various methods to calculate variable importance, with the same goal of trying to see which explanatory variable has the greatest impact on our response variable. We will review these different methods to identify variable importance below and implement them using a dataset examining customer satisfaction with a payment card.</p>
+<p>Variable importance and key drivers analysis are often used in conjunction when determining which variables contribute the most to a model’s predictive power. Different supervised machine learning models use various methods to calculate variable importance, with the same goal of trying to see which explanatory variable has the greatest impact on the response variable. We will review these different methods to identify variable importance below and implement them using a dataset examining customer satisfaction with a payment card.</p>
 <section id="key-driver-analysis-methods-from-linear-regression-models" class="level3">
 <h3 class="anchored" data-anchor-id="key-driver-analysis-methods-from-linear-regression-models">Key Driver Analysis Methods from Linear Regression Models</h3>
 <section id="pearsons-correlation" class="level4">
 <h4 class="anchored" data-anchor-id="pearsons-correlation">Pearsons Correlation</h4>
-<p>In linear regression models, key drivers can be identified via the change in the value of the Pearson Correlation Coefficient. Pearson’s correlation coefficient is a measure used to quantify the linear relationship between two variables, and ranges from -1 to +1. A coefficient of +1 indicates a perfect positive linear relationship whereas -1 indicates a perfect negative linear relationship. 0 indicates no linear correlation.</p>
-<p>Suppose we have 3 explanatory variables as part of our linear regression model. We can remove one variable at a time and recalculate our <code>corr()</code> value. Features with high absolute values of the correlation coefficient (close to 1 or -1) are likely more important to our models predictive power because they have a strong linear relationship with the target variable. The sign can also indicate the direction of the relationship. A positive sign means that as the feature increases, the target increases and vice versa for the negative sign. We can use the correlation coefficient to rank the features based on the absolute value of their respective coefficients, thus features with higher absolute values are generally more influential in predicting the target variable in a linear regression context.</p>
+<p>In linear regression models, key drivers can be identified via the change in the value of the <strong>Pearson Correlation Coefficient</strong>. Pearson’s correlation coefficient is a measure used to quantify the linear relationship between two variables, and ranges from -1 to +1. A coefficient of +1 indicates a perfect positive linear relationship whereas -1 indicates a perfect negative linear relationship. 0 indicates no linear correlation.</p>
+<p>Suppose we have 3 explanatory variables as part of our linear regression model. We can remove one variable at a time and recalculate our Pearson’s Correlation value. Features with high absolute values of the correlation coefficient (close to 1 or -1) are likely more important to our model’s predictive power because they have a strong linear relationship with the target variable. The sign can also indicate the direction of the relationship. A positive sign means that as the feature increases, the target increases and vice versa for the negative sign. We can use the correlation coefficient to rank the features based on the absolute value of their respective coefficients, thus features with higher absolute values are generally more influential in predicting the target variable in a linear regression context.</p>
+<p>When calculating Pearon’s we take the covariance of 2 variables, and divide it by the product of their standard deviations. This formula inherently standardizes the covariance, meaning that Pearson’s correlation coefficient itself is already a standardized measure. Therefore, when implementing pearson’s, you do not need to standardize your data before finding the coefficient values.</p>
 <p>However, it is critical to note that while strong correlations with the target variable are important, it’s also crucial to check the correlations between features. High correlation between features, i.e.&nbsp;multicollinearity, can affect the model’s stability and the interpretation of the coefficients.</p>
 </section>
 <section id="usefullness" class="level4">
 <h4 class="anchored" data-anchor-id="usefullness">Usefullness</h4>
 <p>Usefulnes is another measure derived from linear regression models. “Usefulness” or <span class="math inline">\({\Delta}R^2\)</span>, measures the impact of individual features on the performance of a regression model by observing how the model’s <span class="math inline">\(R^2\)</span> value changes when a feature is dropped. This technique is valuable because it can reveal the contribution of a specific feature to the overall explanatory power of the model, beyond a simple correlation. It is also a relatively straightforward to run.</p>
-<p>However, there are some considerations to take into account when using the <span class="math inline">\({\Delta}R^2\)</span> to evaluate key drivers, specifically relating to interactions and non-linearity between the features. The change in <span class="math inline">\(R^2\)</span> doesn’t account for interactions between features unless specifically modeled. Therefore, if there is an interaction between 2 variables, that would have to be explicilty included in a linear regression model for it to have an impact on the <span class="math inline">\(R^2\)</span> value. Also, non-linear relationships might not be captured effectively. If features are highly correlated, removing one might not show a significant change in <span class="math inline">\(R^2\)</span> because its effect is being captured by the correlated features.</p>
+<p>However, there are some considerations to take into account when using the <span class="math inline">\({\Delta}R^2\)</span> to evaluate key drivers, specifically relating to interactions and non-linearity between the features, similar to Pearson’s. The change in <span class="math inline">\(R^2\)</span> doesn’t account for interactions between features unless specifically modeled. Therefore, if there is an interaction between 2 variables, that would have to be explicilty included in a linear regression model for it to have an impact on the <span class="math inline">\(R^2\)</span> value. Also, non-linear relationships might not be captured effectively. If features are highly correlated, removing one might not show a significant change in <span class="math inline">\(R^2\)</span> because its effect is being captured by the correlated features.</p>
 </section>
 </section>
 <section id="methods-derived-from-game-theory" class="level3">
@@ -252,12 +253,13 @@ window.Quarto = {
 <section id="shapley-values" class="level4">
 <h4 class="anchored" data-anchor-id="shapley-values">Shapley Values</h4>
 <p>Shapley values are a concept derived from cooperative game theory used to fairly allocate the “payout” among players depending on their contribution to the total game. In the context of machine learning, Shapley values can be used to explain the contribution of each feature to the model’s prediction. Shapley values provide a detailed breakdown of how each feature contributes to the final prediction, which can often be more insightful than measures like the pearsons coefficients or <span class="math inline">\({\Delta}R^2\)</span>.</p>
+<p>When computing Shapley values, the need to standardize data before computing Shapley values largely depends on the type of predictive model used. For linear regression models, standardizing might not be necessary for interpreting the contribution of features, as the model is fairly transparent and the contribution of features can be directly observed from the regression coefficients. However, if we are running and creating more complex models like neural networks or ensemble models (e.g., random forests, gradient boosting machines), standardizing features can help in comparing their contributions on a common scale, especially if the features vary widely in scale and units. Finally, regardless of the model, standardizing features can make the interpretation of Shapley values more straightforward across different features. When features are on the same scale, their Shapley values are easier to compare, as no single feature will dominate simply because of differences in scale.</p>
 </section>
 <section id="johnsons-relative-weights" class="level4">
 <h4 class="anchored" data-anchor-id="johnsons-relative-weights">Johnson’s Relative weights</h4>
 <p>Johnson’s relative weights analysis is a statistical technique used to determine the importance of predictor variables in a regression model, especially when dealing with multicollinearity among predictors. This method decomposes the total variance explained by the model into portions attributable to each predictor, taking into account the intercorrelations among them.</p>
-<p>Johnson’s relative weights transform the raw regression coefficients by considering the correlation matrix of the predictors. The result is a set of weights that reflect the contribution of each predictor to the model’s predictive power, adjusted for overlaps due to correlations among predictors.</p>
-<p>Johnson’s weights provide a more nuanced view of feature importance than simple correlation or regression coefficients alone, particularly useful in models where predictors are not independent.</p>
+<p>Johnson’s relative weights transform the raw regression coefficients by considering the correlation matrix of the predictors and results in a set of weights that reflect the contribution of each predictor to the model’s predictive power. Johnson’s weights provide a more nuanced view of feature importance than simple correlation or regression coefficients alone, particularly useful in models where predictors are not independent.</p>
+<p>When computing Johnson’s relative weights, it is generally recommended to standardize the variables. Standardization ensures that each predictor contributes to the regression model on a comparable scale. This is crucial because Johnson’s Relative Weights are used to interpret the proportion of explained variance in the dependent variable that can be attributed to each independent variable. If the variables are not standardized, their weights might reflect their scale rather than their actual contribution to the model. Standardization removes this disparity, allowing a fair assessment of each variable’s relative importance based on their contribution to the model’s predictive power rather than their scale.</p>
 </section>
 </section>
 <section id="methods-derived-from-decision-trees-and-ensemble-models" class="level3">
@@ -266,11 +268,12 @@ window.Quarto = {
 <h4 class="anchored" data-anchor-id="decision-trees-and-gini-importance">Decision Trees and Gini Importance</h4>
 <p>In Decision Trees and Ensemeble Models (such as Random Forest or Gradient boosting) methods such as <strong>Gini Importance</strong> and <strong>Permutation Importance</strong> are used to determine this varibale importance. <strong>Gini Importance</strong> - Measures how much each feature decreases the impurity in a decision tree, averaged over all trees in the ensemble. <strong>Permutation Importance</strong> - Measures the decrease in model performance (such as via accuracy or Root mean squared error) when the values of a feature are randomly shuffled, breaking the relationship between the feature and the target.</p>
 <p>By understanding variable importance and conducting key drivers analysis, organizations can make data-driven decisions, prioritize resources, and develop strategies that target the most impactful factors.</p>
+<p>When creating decision trees and computing the Gini Importance, standardizing the data beforehand is not necessary and generally doesn’t enhance the performance or interpretability of the model.</p>
 </section>
 </section>
 <section id="data-processing" class="level3">
 <h3 class="anchored" data-anchor-id="data-processing">2. Data processing</h3>
-<div id="d8f79026" class="cell" data-execution_count="1">
+<div id="04b79962" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyrsm <span class="im">as</span> rsm </span>
@@ -482,7 +485,7 @@ window.Quarto = {
 </ul>
 <p>Respondents were asked to respond <code>yes</code> or <code>no</code> to 9 questions related to attributes of a payment card. They then provided an overall satisfaction score from 1-5. We will use the methods above to determine which attributes contribute the highest to respondents overall satisfaction of the payment cards.</p>
 <p>Before we demonstrate differences in the relative importance values, we need to first assess the multicollinearity between the variables. Due to the <strong>Halo Effect</strong>, we see that respondents tend to rate something higher on all attributes if they like a brand, but also rate something lower on all attributes if they dislike a brand. Therefore, we often see that in perception datasets, there is a high level of multicollinearity. Below, we will run a correlation matrix to see which variables are highly correlated with each other.</p>
-<div id="4cd2feae" class="cell" data-execution_count="2">
+<div id="4d27a082" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="op">=</span> driver_analysis.corr()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(correlation_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -517,7 +520,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 </div>
 <section id="pearson-correlation" class="level4">
 <h4 class="anchored" data-anchor-id="pearson-correlation">Pearson Correlation</h4>
-<div id="1d129c4a" class="cell" data-execution_count="3">
+<div id="638179ed" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardizing the Driver Analysis Dataframe</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>da_standardized <span class="op">=</span> driver_analysis.copy().iloc[:, <span class="dv">2</span>:<span class="dv">12</span>]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>da_standardized <span class="op">=</span> (da_standardized <span class="op">-</span> da_standardized.mean()) <span class="op">/</span> da_standardized.std()</span>
@@ -535,7 +538,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>coefficients <span class="op">=</span> model.coef_</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>intercept <span class="op">=</span> model.intercept_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="add6db1c" class="cell" data-execution_count="4">
+<div id="75750c7a" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Creating an empty dictionary to store our coefficients in </span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pearson_corr_matrix <span class="op">=</span> {}</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -574,7 +577,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 </section>
 <section id="standardized-regression-coefficients" class="level4">
 <h4 class="anchored" data-anchor-id="standardized-regression-coefficients">Standardized Regression Coefficients</h4>
-<div id="2d666062" class="cell" data-execution_count="5">
+<div id="7ed53cb5" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>X_unstandardized <span class="op">=</span> driver_analysis[[<span class="st">"trust"</span>, <span class="st">"build"</span>, <span class="st">"differs"</span>, <span class="st">"easy"</span>, <span class="st">"appealing"</span>, <span class="st">"rewarding"</span>, <span class="st">"popular"</span>, <span class="st">"service"</span>, <span class="st">"impact"</span>]]</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>y_unstandardized <span class="op">=</span> driver_analysis[<span class="st">'satisfaction'</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -608,7 +611,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 </section>
 <section id="shapley-values-for-a-linear-regression" class="level4">
 <h4 class="anchored" data-anchor-id="shapley-values-for-a-linear-regression">Shapley Values for a linear regression</h4>
-<div id="b2e934ec" class="cell" data-execution_count="6">
+<div id="a1d02f72" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the linear regression model</span></span>
@@ -624,7 +627,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot Shapley values (if needed)</span></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>shap.summary_plot(shap_values, X_standardized)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ExactExplainer explainer:  70%|██████▉   | 1777/2553 [00:00&lt;?, ?it/s]ExactExplainer explainer:  70%|███████   | 1792/2553 [00:10&lt;00:05, 148.63it/s]ExactExplainer explainer:  71%|███████   | 1807/2553 [00:10&lt;00:13, 54.41it/s] ExactExplainer explainer:  71%|███████▏  | 1825/2553 [00:10&lt;00:08, 83.49it/s]ExactExplainer explainer:  72%|███████▏  | 1844/2553 [00:10&lt;00:06, 109.45it/s]ExactExplainer explainer:  73%|███████▎  | 1867/2553 [00:10&lt;00:04, 139.17it/s]ExactExplainer explainer:  74%|███████▍  | 1891/2553 [00:10&lt;00:04, 164.86it/s]ExactExplainer explainer:  75%|███████▍  | 1911/2553 [00:11&lt;00:04, 154.06it/s]ExactExplainer explainer:  76%|███████▌  | 1929/2553 [00:11&lt;00:06, 103.31it/s]ExactExplainer explainer:  76%|███████▋  | 1953/2553 [00:11&lt;00:04, 128.73it/s]ExactExplainer explainer:  77%|███████▋  | 1976/2553 [00:11&lt;00:03, 149.31it/s]ExactExplainer explainer:  78%|███████▊  | 1999/2553 [00:11&lt;00:03, 166.71it/s]ExactExplainer explainer:  79%|███████▉  | 2021/2553 [00:11&lt;00:02, 179.21it/s]ExactExplainer explainer:  80%|███████▉  | 2042/2553 [00:12&lt;00:04, 114.28it/s]ExactExplainer explainer:  81%|████████  | 2067/2553 [00:12&lt;00:03, 139.27it/s]ExactExplainer explainer:  82%|████████▏ | 2094/2553 [00:12&lt;00:02, 166.35it/s]ExactExplainer explainer:  83%|████████▎ | 2116/2553 [00:12&lt;00:02, 176.57it/s]ExactExplainer explainer:  84%|████████▎ | 2138/2553 [00:12&lt;00:02, 179.62it/s]ExactExplainer explainer:  85%|████████▍ | 2159/2553 [00:12&lt;00:02, 174.23it/s]ExactExplainer explainer:  85%|████████▌ | 2180/2553 [00:12&lt;00:02, 182.50it/s]ExactExplainer explainer:  86%|████████▌ | 2201/2553 [00:12&lt;00:01, 187.25it/s]ExactExplainer explainer:  87%|████████▋ | 2224/2553 [00:13&lt;00:01, 195.36it/s]ExactExplainer explainer:  88%|████████▊ | 2256/2553 [00:13&lt;00:01, 229.18it/s]ExactExplainer explainer:  89%|████████▉ | 2280/2553 [00:13&lt;00:01, 218.48it/s]ExactExplainer explainer:  90%|█████████ | 2304/2553 [00:13&lt;00:01, 223.56it/s]ExactExplainer explainer:  91%|█████████▏| 2331/2553 [00:13&lt;00:00, 234.34it/s]ExactExplainer explainer:  92%|█████████▏| 2356/2553 [00:13&lt;00:00, 237.65it/s]ExactExplainer explainer:  93%|█████████▎| 2381/2553 [00:13&lt;00:00, 222.15it/s]ExactExplainer explainer:  94%|█████████▍| 2404/2553 [00:13&lt;00:01, 143.68it/s]ExactExplainer explainer:  95%|█████████▍| 2423/2553 [00:14&lt;00:00, 145.18it/s]ExactExplainer explainer:  96%|█████████▌| 2441/2553 [00:14&lt;00:00, 146.18it/s]ExactExplainer explainer:  96%|█████████▋| 2458/2553 [00:14&lt;00:00, 138.72it/s]ExactExplainer explainer:  97%|█████████▋| 2481/2553 [00:14&lt;00:00, 159.01it/s]ExactExplainer explainer:  98%|█████████▊| 2503/2553 [00:14&lt;00:00, 171.64it/s]ExactExplainer explainer:  99%|█████████▉| 2522/2553 [00:14&lt;00:00, 151.96it/s]ExactExplainer explainer: 100%|█████████▉| 2547/2553 [00:14&lt;00:00, 171.54it/s]ExactExplainer explainer: 2554it [00:14, 52.27it/s]                           </code></pre>
+<pre><code>ExactExplainer explainer:  60%|█████▉    | 1521/2553 [00:00&lt;?, ?it/s]ExactExplainer explainer:  60%|██████    | 1541/2553 [00:10&lt;00:05, 181.33it/s]ExactExplainer explainer:  61%|██████    | 1560/2553 [00:10&lt;00:05, 167.44it/s]ExactExplainer explainer:  62%|██████▏   | 1584/2553 [00:10&lt;00:04, 197.48it/s]ExactExplainer explainer:  63%|██████▎   | 1608/2553 [00:10&lt;00:04, 212.03it/s]ExactExplainer explainer:  64%|██████▍   | 1631/2553 [00:10&lt;00:04, 218.06it/s]ExactExplainer explainer:  65%|██████▍   | 1653/2553 [00:10&lt;00:04, 207.89it/s]ExactExplainer explainer:  66%|██████▌   | 1674/2553 [00:10&lt;00:04, 204.13it/s]ExactExplainer explainer:  66%|██████▋   | 1696/2553 [00:10&lt;00:04, 207.26it/s]ExactExplainer explainer:  67%|██████▋   | 1719/2553 [00:10&lt;00:03, 211.21it/s]ExactExplainer explainer:  68%|██████▊   | 1741/2553 [00:11&lt;00:04, 171.45it/s]ExactExplainer explainer:  69%|██████▉   | 1764/2553 [00:11&lt;00:04, 186.26it/s]ExactExplainer explainer:  70%|██████▉   | 1787/2553 [00:11&lt;00:03, 197.24it/s]ExactExplainer explainer:  71%|███████   | 1808/2553 [00:11&lt;00:03, 190.73it/s]ExactExplainer explainer:  72%|███████▏  | 1830/2553 [00:11&lt;00:03, 197.02it/s]ExactExplainer explainer:  73%|███████▎  | 1851/2553 [00:11&lt;00:03, 194.67it/s]ExactExplainer explainer:  73%|███████▎  | 1871/2553 [00:11&lt;00:03, 182.78it/s]ExactExplainer explainer:  74%|███████▍  | 1891/2553 [00:11&lt;00:03, 184.95it/s]ExactExplainer explainer:  75%|███████▍  | 1910/2553 [00:12&lt;00:03, 176.14it/s]ExactExplainer explainer:  76%|███████▌  | 1929/2553 [00:12&lt;00:03, 179.50it/s]ExactExplainer explainer:  77%|███████▋  | 1954/2553 [00:12&lt;00:03, 194.56it/s]ExactExplainer explainer:  77%|███████▋  | 1976/2553 [00:12&lt;00:02, 198.48it/s]ExactExplainer explainer:  78%|███████▊  | 1996/2553 [00:12&lt;00:02, 197.43it/s]ExactExplainer explainer:  79%|███████▉  | 2017/2553 [00:12&lt;00:02, 197.54it/s]ExactExplainer explainer:  80%|███████▉  | 2037/2553 [00:12&lt;00:02, 197.03it/s]ExactExplainer explainer:  81%|████████  | 2057/2553 [00:12&lt;00:02, 192.06it/s]ExactExplainer explainer:  81%|████████▏ | 2077/2553 [00:12&lt;00:02, 183.14it/s]ExactExplainer explainer:  82%|████████▏ | 2096/2553 [00:13&lt;00:02, 177.68it/s]ExactExplainer explainer:  83%|████████▎ | 2116/2553 [00:13&lt;00:02, 182.43it/s]ExactExplainer explainer:  84%|████████▎ | 2135/2553 [00:13&lt;00:02, 170.80it/s]ExactExplainer explainer:  84%|████████▍ | 2157/2553 [00:13&lt;00:02, 182.08it/s]ExactExplainer explainer:  85%|████████▌ | 2178/2553 [00:13&lt;00:02, 186.70it/s]ExactExplainer explainer:  86%|████████▌ | 2197/2553 [00:13&lt;00:02, 142.24it/s]ExactExplainer explainer:  87%|████████▋ | 2213/2553 [00:13&lt;00:02, 135.43it/s]ExactExplainer explainer:  87%|████████▋ | 2229/2553 [00:13&lt;00:02, 141.11it/s]ExactExplainer explainer:  88%|████████▊ | 2245/2553 [00:14&lt;00:02, 133.90it/s]ExactExplainer explainer:  89%|████████▊ | 2260/2553 [00:14&lt;00:02, 135.45it/s]ExactExplainer explainer:  89%|████████▉ | 2283/2553 [00:14&lt;00:01, 158.80it/s]ExactExplainer explainer:  90%|█████████ | 2304/2553 [00:14&lt;00:01, 172.48it/s]ExactExplainer explainer:  91%|█████████ | 2324/2553 [00:14&lt;00:01, 179.96it/s]ExactExplainer explainer:  92%|█████████▏| 2351/2553 [00:14&lt;00:01, 199.55it/s]ExactExplainer explainer:  93%|█████████▎| 2373/2553 [00:14&lt;00:00, 204.14it/s]ExactExplainer explainer:  94%|█████████▍| 2394/2553 [00:14&lt;00:00, 199.59it/s]ExactExplainer explainer:  95%|█████████▍| 2417/2553 [00:14&lt;00:00, 207.25it/s]ExactExplainer explainer:  95%|█████████▌| 2438/2553 [00:14&lt;00:00, 206.79it/s]ExactExplainer explainer:  96%|█████████▋| 2462/2553 [00:15&lt;00:00, 214.06it/s]ExactExplainer explainer:  97%|█████████▋| 2484/2553 [00:15&lt;00:00, 202.37it/s]ExactExplainer explainer:  98%|█████████▊| 2505/2553 [00:15&lt;00:00, 168.58it/s]ExactExplainer explainer:  99%|█████████▉| 2523/2553 [00:15&lt;00:00, 171.41it/s]ExactExplainer explainer: 100%|█████████▉| 2544/2553 [00:15&lt;00:00, 181.27it/s]ExactExplainer explainer: 2554it [00:15, 66.07it/s]                           </code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -634,7 +637,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 </div>
 </div>
 </div>
-<div id="5ffdf9d2" class="cell" data-execution_count="7">
+<div id="1e1c3a58" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sum up the absolute values of Shapley values for each feature</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>feature_importance <span class="op">=</span> np.<span class="bu">sum</span>(shap_values.values, axis<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -648,7 +651,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(percental_total)</span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame to display the results</span></span>
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>shapley_df <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: X_unstandardized.columns,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: X_standardized.columns,</span>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'feature_importance'</span>: feature_importance,</span>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Shapley Value Sum'</span>: total_importance,</span>
 <span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Shapley_percent_Total'</span>: percentage_contributions</span>
@@ -674,7 +677,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 </section>
 <section id="usefulness" class="level4">
 <h4 class="anchored" data-anchor-id="usefulness">Usefulness</h4>
-<div id="57869bf2" class="cell" data-execution_count="8">
+<div id="a7cf2549" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>X_full <span class="op">=</span> sm.add_constant(X_unstandardized)  <span class="co"># Adding a constant term for the intercept</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>model_full <span class="op">=</span> sm.OLS(y_unstandardized, X_full).fit()</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>r2_full <span class="op">=</span> model_full.rsquared</span>
@@ -701,7 +704,7 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 </section>
 <section id="johnsons-relative-weights-epsilon" class="level4">
 <h4 class="anchored" data-anchor-id="johnsons-relative-weights-epsilon">Johnson’s relative weights (Epsilon)</h4>
-<div id="3049f56b" class="cell" data-execution_count="9">
+<div id="088878a8" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a linear regression model</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>model.fit(X_unstandardized, y_unstandardized)</span>
@@ -724,88 +727,101 @@ impact        0.412092   0.394282   0.384245  0.305265  0.412313  1.000000  </co
 <span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the results</span></span>
 <span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: X_unstandardized.columns,</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: X_standardized.columns,</span>
 <span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Relative Contribution'</span>: proportional_contributions,</span>
 <span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Johnsons Epsilon'</span>: normalized_weights<span class="op">*</span><span class="dv">100</span></span>
 <span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>results[<span class="st">"Johnsons Epsilon"</span>] <span class="op">=</span> results[<span class="st">"Johnsons Epsilon"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>johnsons_df <span class="op">=</span> results[[<span class="st">"Feature"</span>, <span class="st">"Johnsons Epsilon"</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>johnsons_df <span class="op">=</span> results[[<span class="st">"Feature"</span>, <span class="st">"Johnsons Epsilon"</span>]]</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(johnsons_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Feature  Johnsons Epsilon
+0      trust             11.39
+1      build             11.37
+2    differs             16.98
+3       easy             12.90
+4  appealing              7.46
+5  rewarding              8.31
+6    popular             10.88
+7    service             13.37
+8     impact              7.34</code></pre>
+</div>
 </div>
 </section>
 <section id="mean-decrease-in-the-gini-coefficient-from-a-random-forest" class="level4">
 <h4 class="anchored" data-anchor-id="mean-decrease-in-the-gini-coefficient-from-a-random-forest">Mean Decrease in the Gini Coefficient from a Random Forest</h4>
-<div id="f55725e2" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X_unstandardized, y_unstandardized, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">42</span>, criterion<span class="op">=</span><span class="st">'gini'</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Train the model</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>rf.fit(X_train, y_train)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract feature importances (Mean Decrease in Gini)</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>feature_importances <span class="op">=</span> rf.feature_importances_</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame to hold the feature importances</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> X_unstandardized.columns</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>importance_df <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: features,</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Importance'</span>: feature_importances</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort the DataFrame by importance</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>importance_df <span class="op">=</span> importance_df.sort_values(by<span class="op">=</span><span class="st">'Importance'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>importance_df[<span class="st">"Importance_percentage"</span>] <span class="op">=</span> (importance_df[<span class="st">"Importance"</span>] <span class="op">/</span> importance_df[<span class="st">"Importance"</span>].<span class="bu">sum</span>()) <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>importance_df[<span class="st">"gini_percent"</span>] <span class="op">=</span> importance_df[<span class="st">"Importance_percentage"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>gini_index <span class="op">=</span> importance_df[[<span class="st">"Feature"</span>, <span class="st">"gini_percent"</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="d81a2b62" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X_unstandardized, y_unstandardized, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">42</span>, criterion<span class="op">=</span><span class="st">'gini'</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Train the model</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>rf.fit(X_train, y_train)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract feature importances (Mean Decrease in Gini)</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>feature_importances <span class="op">=</span> rf.feature_importances_</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame to hold the feature importances</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> X_unstandardized.columns</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>importance_df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Feature'</span>: features,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Importance'</span>: feature_importances</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort the DataFrame by importance</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>importance_df <span class="op">=</span> importance_df.sort_values(by<span class="op">=</span><span class="st">'Importance'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>importance_df[<span class="st">"Importance_percentage"</span>] <span class="op">=</span> (importance_df[<span class="st">"Importance"</span>] <span class="op">/</span> importance_df[<span class="st">"Importance"</span>].<span class="bu">sum</span>()) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>importance_df[<span class="st">"gini_percent"</span>] <span class="op">=</span> importance_df[<span class="st">"Importance_percentage"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>gini_index <span class="op">=</span> importance_df[[<span class="st">"Feature"</span>, <span class="st">"gini_percent"</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
 <section id="key-driver-analysis-and-interpretation" class="level3">
 <h3 class="anchored" data-anchor-id="key-driver-analysis-and-interpretation">3. Key Driver Analysis and Interpretation</h3>
-<div id="8d2dd317" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging all of the dataframes together</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging Pearsons with Standardized Linear Coefficient</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(pearson_corr_df, SLC_df, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Predictor'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Shapley Percents</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,shapley_df_short, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Usefulness Percentages</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,usefulness_df, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Johnsons Percentages</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,johnsons_df, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Gini Index %</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,gini_index, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co">#dropping redundant columns and setting the new index</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>merged_df.drop(columns<span class="op">=</span>[<span class="st">"Predictor"</span>, <span class="st">"Feature_x"</span>, <span class="st">"feature"</span>, <span class="st">"Feature_y"</span>, <span class="st">"Feature"</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>merged_df.set_index(<span class="st">'Features'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="907fa978" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging all of the dataframes together</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging Pearsons with Standardized Linear Coefficient</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(pearson_corr_df, SLC_df, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Predictor'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Shapley Percents</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,shapley_df_short, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Usefulness Percentages</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,usefulness_df, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Johnsons Percentages</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,johnsons_df, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Merging on Gini Index %</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> pd.merge(merged_df,gini_index, left_on <span class="op">=</span> <span class="st">'Features'</span>, right_on <span class="op">=</span> <span class="st">'Feature'</span>, how <span class="op">=</span> <span class="st">'left'</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co">#dropping redundant columns and setting the new index</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>merged_df.drop(columns<span class="op">=</span>[<span class="st">"Predictor"</span>, <span class="st">"Feature_x"</span>, <span class="st">"feature"</span>, <span class="st">"Feature_y"</span>, <span class="st">"Feature"</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>merged_df.set_index(<span class="st">'Features'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="8e8ec58e" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> textwrap <span class="im">import</span> wrap</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="76e84c67" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> textwrap <span class="im">import</span> wrap</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="9f952839" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>column_aliases1 <span class="op">=</span> {</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Pearson_corr_%'</span>: <span class="st">'Pearson Correlations'</span>,</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SLC_Percent of Total'</span>: <span class="st">' Regression Coeff.'</span>,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Shapley_percent_Total'</span>: <span class="st">'Shapley Values'</span>,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Usefulness %'</span>: <span class="st">'"Usefulness"'</span>,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Johnsons Epsilon'</span>: <span class="st">"Johnson's Epsilon"</span>,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gini_percent'</span>: <span class="st">'Decrease - RF Gini'</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>merged_df.rename(columns<span class="op">=</span>column_aliases1, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="88d4560d" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>column_aliases1 <span class="op">=</span> {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Pearson_corr_%'</span>: <span class="st">'Pearson Correlations'</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SLC_Percent of Total'</span>: <span class="st">' Regression Coeff.'</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Shapley_percent_Total'</span>: <span class="st">'Shapley Values'</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Usefulness %'</span>: <span class="st">'"Usefulness"'</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Johnsons Epsilon'</span>: <span class="st">"Johnson's Epsilon"</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gini_percent'</span>: <span class="st">'Decrease - RF Gini'</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>merged_df.rename(columns<span class="op">=</span>column_aliases1, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="e455c571" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating the heatmap</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>sns.heatmap(merged_df, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">'cividis'</span>, fmt<span class="op">=</span><span class="st">".2f"</span>)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">45</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Key Driver Analysis: Feature Percentages'</span>)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="b5e1bf0c" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating the heatmap</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>sns.heatmap(merged_df, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">'viridis'</span>, fmt<span class="op">=</span><span class="st">".2f"</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Key Driver Analysis: Feature Percentages'</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           Pearson Correlations   Regression Coeff.  Shapley Values  \
 Features                                                              
@@ -848,7 +864,7 @@ impact            42.83               7.34                9.15  </code></pre>
 <li><p><strong>Johnson’s Epsilon</strong>: This metric likely measures the change in predictability when a feature is altered. “Differs”, “easy”, and “service” show higher values, suggesting these features significantly impact model predictability.</p></li>
 <li><p><strong>Decrease - RF Gini</strong>: Derived from Random Forests, this shows the decrease in node impurity (Gini index) brought by each feature. “Popular”, “rewarding”, and “easy” have higher values, indicating their utility in improving model decisions through increased purity in node splits.</p></li>
 </ul>
-<p>Based on the heatmap and table created above, we see that there are three overall high impact features. <code>Impact</code>, <code>trust</code>, and <code>service</code> consistently show high importance across multiple metrics, suggesting they are crucial for accurate predictions. Features like <code>easy</code>, <code>differs</code>, and <code>appealing</code> exhibit moderate importance scores across various methods, indicating they play a secondary yet meaningful role in model predictions.<code>Rewarding</code> and <code>popular</code>, despite their roles, seem to have less influence compared to other features, particularly in metrics outside the Decrease - RF Gini.</p>
+<p>Based on the heatmap and table created above, we see that there are three overall high impact features. <code>Impact</code>, <code>trust</code>, and <code>service</code> consistently show high importance across multiple metrics, suggesting they are crucial for accurate predictions. Features like <code>easy</code>, <code>differs</code>, and <code>appealing</code> exhibit moderate importance scores across various methods, indicating they play a secondary yet meaningful role in model predictions.<code>Rewarding</code> and <code>popular</code>, despite their roles, seem to have less influence compared to other features, particularly in metrics outside the Decrease - RF Gini. In this assignment, we were trying to recreate the table in slide 19. Despite not getting the exact same numbers, I did get the same ordering of important features.</p>
 
 
 </section>

@@ -14,7 +14,8 @@ This assignment uses a Multi-nomial Logit (MNL) model to analyze (1) yogurt purc
 ### Background on the Likelihood for the Multi-nomial logit Model 
 A multi-nomimal logit (MNL) model is an extension of the traditional binary logit model and used when the dependent variable has more than two categories or levels. In a MNL model, the probabilities of each category are modeled simultaneously using a set of independent variables and the probabilities sum up to 1 across all categories. 
 
-Our MNL model will estimate parameters for each explanatory variable which represent the effect of that variable on the odds of choosing one alternative over the others. These parameters are typically estimated using maximum likelihood estimation. 
+Our MNL model will estimate parameters for each explanatory variable which represent the effect of that variable on the odds of choosing one alternative over the others. These parameters are typically estimated using maximum likelihood est
+imation. 
 
 Suppose we have $i=1,\ldots,n$ consumers who each select exactly one product $j$ from a set of $J$ products. The outcome variable is the identity of the product chosen $y_i \in \{1, \ldots, J\}$ or equivalently a vector of $J-1$ zeros and $1$ one, where the $1$ indicates the selected product. For example, if the third product was chosen out of 4 products, then either $y=3$ or $y=(0,0,1,0)$ depending on how we want to represent it. 
 

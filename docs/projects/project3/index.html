@@ -265,7 +265,7 @@ window.Quarto = {
 <section id="yogurt-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="yogurt-dataset">Yogurt Dataset</h3>
 <p>We will use the <code>yogurt_data</code> dataset, which provides anonymized consumer identifiers (<code>id</code>), a vector indicating the chosen product (<code>y1</code>:<code>y4</code>), a vector indicating if any products were “featured” in the store as a form of advertising (<code>f1</code>:<code>f4</code>), and the products’ prices (<code>p1</code>:<code>p4</code>). For example, consumer 1 purchased yogurt 4 at a price of 0.079/oz and none of the yogurts were featured/advertised at the time of consumer 1’s purchase. Consumers 2 through 7 each bought yogurt 2, which for consumer 2, 3, 4, and 5 was priced at 0.098/oz. Customer 6 also purchased yogurt 2, but when it was priced at 0.092/oz and consumber 7 purchased it at 0.081/oz.</p>
-<div id="1335262b" class="cell" data-execution_count="1">
+<div id="37aa488f" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -546,7 +546,7 @@ window.Quarto = {
 <p>This data gives us an overview of which customer bought what yogurt brand at a specific price and indicates if the product was featured at the time. Let the vector of product features include brand dummy variables for yogurts 1-3 (we’ll omit a dummy for product 4 to avoid multi-collinearity), a dummy variable to indicate if a yogurt was featured, and a continuous variable for the yogurts’ prices:</p>
 <p><span class="math display">\[ x_j' = [\mathbf{1}(\text{Yogurt 1}), \mathbf{1}(\text{Yogurt 2}), \mathbf{1}(\text{Yogurt 3}), X_f, X_p] \]</span></p>
 <p>To start to calculate our maximum liklihood for our MNL model, we first want to reorganize the data from our wide to long shape with <span class="math inline">\(n \times J\)</span> rows and a single column for each covariate. As part of this re-organization, we’ll add binary variables to indicate the first 3 products; the variables for featured and price are included in the dataset and simply need to be “pivoted” or “melted” from wide to long. By reorganizing the data this way, we can effectively analyze the likelihood of different choices using the MNL model.</p>
-<div id="2b8820e0" class="cell" data-execution_count="2">
+<div id="0ce7dd2f" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>yogurt[<span class="st">"X_yogurt1"</span>] <span class="op">=</span> yogurt[<span class="st">"y1"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="dv">1</span> <span class="cf">if</span> x <span class="op">==</span><span class="dv">1</span> <span class="cf">else</span> <span class="dv">0</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>yogurt[<span class="st">"X_yogurt2"</span>] <span class="op">=</span> yogurt[<span class="st">"y2"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="dv">1</span> <span class="cf">if</span>  x <span class="op">==</span><span class="dv">1</span> <span class="cf">else</span> <span class="dv">0</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>yogurt[<span class="st">"X_yogurt3"</span>] <span class="op">=</span> yogurt[<span class="st">"y3"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="dv">1</span> <span class="cf">if</span> x <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="dv">0</span>)</span>
@@ -646,7 +646,7 @@ window.Quarto = {
 </div>
 <p>Now we have a dataframe that will enable us to effectively analyze the likelihood of different choices via our MNL model. To being this process, we need to define our log-likelihood function. Our <code>log_likelihood</code> function has 3 inputs: - <code>params</code> - the array containing the parameter values to be optimized - <code>data</code> - our data from the yogurt survey</p>
 <p>Our function will return the log-likelihood of the MNL Model.</p>
-<div id="173e921b" class="cell" data-execution_count="3">
+<div id="7ce7cf4a" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> optimize</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -707,7 +707,7 @@ Beta_p: -25.036317858555442
 <h3 class="anchored" data-anchor-id="discussion">Discussion</h3>
 <p>The intercepts for the yogurt products are the coefficients or Betas for <code>yogurt1</code>, <code>yogurt2</code>, and <code>yogurt3</code>. These coefficients represent the preferences for each yogurt product when all other variables are held constant. - Our <code>Beta1</code> value is <strong>1.2468</strong>. This coefficient represents the effect of the first yogurt feature (X_yogurt1) on the likelihood of the yogurt being chosen. A positive value suggests that as X_yogurt1 increases by one unit, the log-odds of the yogurt being chosen increases by 1.2468 - <code>Beta2</code> has a value of <strong>1.2956</strong>: This coefficient represents the effect of the second yogurt feature (X_yogurt2). Similarly, a positive value indicates that an increase in X_yogurt2 by one unit increases the log-odds of the yogurt being chosen by 1.2956. - <code>Beta3</code> has a value of <strong>1.2183</strong>: This coefficient represents the effect of the third yogurt feature (X_yogurt3). Again, a positive value means that an increase in X_yogurt3 by one unit increases the log-odds of the yogurt being chosen by 1.2183. - The <code>Beta_f</code> has a value of <strong>-0.267</strong>: This coefficient represents the effect of the yogurt being featured (X_featured). The negative value suggests that if the yogurt is featured, the log-odds of it being chosen decrease by 0.267. This might seem counterintuitive, as one might expect featured products to be more likely to be chosen. It could indicate that the featured status alone doesn’t make a yogurt more appealing or there might be other factors at play such as price or brand loyalty. - <code>Beta_p</code> has a value of <strong>-25.036</strong>: This coefficient represents the effect of the price (<code>X_price</code>) on the likelihood of the yogurt being chosen. A very large negative value indicates that an increase in price significantly decreases the log-odds of the yogurt being chosen. This makes intuitive sense, as higher prices generally deter purchases.</p>
 <p>In summary, the output of our log likelihood function indicates that Positive betas (Beta1, Beta2, Beta3) correspond with an increase in the respective yogurt features make it more likely that the yogurt will be chosen. The negative beta for being featured (Beta_f) suggests a decrease in likelihood when the yogurt is featured. The highly negative beta for price (Beta_p) indicates that higher prices significantly reduce the likelihood of the yogurt being chosen. The negative coefficient indicates that as the price increases, the likelihood of purchase decreases. This is consistent with economic theory and consumer behavior.</p>
-<div id="b6416fca" class="cell" data-execution_count="4">
+<div id="35ec4ee8" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>beta_p <span class="op">=</span> <span class="op">-</span><span class="fl">25.036</span>  <span class="co"># Estimated price coefficient</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>intercepts <span class="op">=</span> [<span class="fl">1.2468</span>, <span class="fl">1.2956</span>, <span class="fl">1.21839</span>]  <span class="co"># Intercepts for yogurt products</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -727,7 +727,7 @@ Beta_p: -25.036317858555442
 </div>
 </div>
 <p>One benefit of the MNL model is that we can simulate counterfactuals (eg, what if the price of yogurt 1 was $0.10/oz instead of $0.08/oz).</p>
-<div id="ce522004" class="cell" data-execution_count="5">
+<div id="8ec3fb59" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fitted_params <span class="op">=</span> [<span class="fl">1.2468</span>, <span class="fl">1.2956</span>, <span class="fl">1.21839</span>,<span class="op">-</span><span class="fl">0.2677</span>, <span class="op">-</span><span class="fl">25.0363</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -784,7 +784,7 @@ Market share for yogurt 4:  34.5</code></pre>
 <p>In this case, we will be evaluating minivan preferences via conjoint analysis.</p>
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
-<div id="1a3528dc" class="cell" data-execution_count="6">
+<div id="0158a83c" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
@@ -909,7 +909,7 @@ Option 3: 6 Seats, 3ft Cargo, Gas Engine, 30K
 </section>
 <section id="model" class="level3">
 <h3 class="anchored" data-anchor-id="model">Model</h3>
-<div id="d0cad98a" class="cell" data-execution_count="7">
+<div id="e2739d14" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#converting categorical variables into numerical variables to run the model</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>conjoint_dummies1 <span class="op">=</span> pd.get_dummies(conjoint[<span class="st">'cargo'</span>], prefix <span class="op">=</span> <span class="st">'cargo'</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>conjoint_dummies2 <span class="op">=</span> pd.get_dummies(conjoint[<span class="st">"eng"</span>], prefix <span class="op">=</span> <span class="st">'eng'</span>)</span>
@@ -917,7 +917,7 @@ Option 3: 6 Seats, 3ft Cargo, Gas Engine, 30K
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#concatenate the dummy variables back with the original dataframe</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>concat_conjoint <span class="op">=</span> pd.concat([conjoint, conjoint_dummies1, conjoint_dummies2], axis <span class="op">=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="999dc2e7" class="cell" data-execution_count="8">
+<div id="5563210e" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#converting the yes, no's for carpool into 1s and 0s</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>concat_conjoint[<span class="st">"carpool"</span>] <span class="op">=</span> rsm.ifelse(concat_conjoint[<span class="st">"carpool"</span>] <span class="op">==</span> <span class="st">'yes'</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>concat_conjoint.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1039,11 +1039,11 @@ Option 3: 6 Seats, 3ft Cargo, Gas Engine, 30K
 </div>
 </div>
 </div>
-<div id="85dbb2de" class="cell" data-execution_count="9">
+<div id="266842a7" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#converting the dummy true false variables into 1s and 0s</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>concat_conjoint[[<span class="st">"cargo_2ft"</span>, <span class="st">"cargo_3ft"</span>, <span class="st">"eng_elec"</span>, <span class="st">"eng_gas"</span>, <span class="st">"eng_hyb"</span>]] <span class="op">=</span> concat_conjoint[[<span class="st">"cargo_2ft"</span>, <span class="st">"cargo_3ft"</span>, <span class="st">"eng_elec"</span>, <span class="st">"eng_gas"</span>, <span class="st">"eng_hyb"</span>]].astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="a04f0ff1" class="cell" data-execution_count="10">
+<div id="0788e763" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#omit variables to avoid multi-collinearity</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>conjoint_omit <span class="op">=</span> concat_conjoint[(concat_conjoint[<span class="st">'seat'</span>] <span class="op">!=</span> <span class="dv">6</span>)]</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1066,8 +1066,8 @@ Option 3: 6 Seats, 3ft Cargo, Gas Engine, 30K
 Dep. Variable:                 choice   No. Observations:                 5976
 Model:                        MNLogit   Df Residuals:                     5970
 Method:                           MLE   Df Model:                            5
-Date:                Thu, 16 May 2024   Pseudo R-squ.:                  0.1153
-Time:                        17:34:39   Log-Likelihood:                -3261.5
+Date:                Thu, 30 May 2024   Pseudo R-squ.:                  0.1153
+Time:                        19:11:08   Log-Likelihood:                -3261.5
 converged:                       True   LL-Null:                       -3686.4
 Covariance Type:            nonrobust   LLR p-value:                2.002e-181
 ==============================================================================
@@ -1103,7 +1103,7 @@ Finally, an increase in <code>price</code> is associated with a decrease in the 
 </ul>
 <p>Based on the coefficients from our model, respondents seem to prefer <code>seat</code> = 8, <code>engine</code> = gas, <code>price</code> = 30K, and <code>cargo</code> = 3ft.</p>
 <p>Our <code>price</code> coefficient is <strong>-0.1556</strong>. This means that a one unit increase in the <code>price</code> variable is associateed with a decrease in the log-odds of choosing that combination by <strong>0.1556</strong>, holding all other variables constants.</p>
-<div id="4361228d" class="cell" data-execution_count="11">
+<div id="0940748c" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#price coefficient from model</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>price_coeff <span class="op">=</span> <span class="op">-</span><span class="fl">0.1556</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1122,7 +1122,7 @@ Finally, an increase in <code>price</code> is associated with a decrease in the 
 </div>
 </div>
 <p>To predict the market shares of each minivan using the estimated parameters from the multinomial logistic regression, we can calculate the utility for each minivan and then use the softmax function to convert these utilities into probabilities. These probabilities will represent the market shares.</p>
-<div id="1f16d45d" class="cell" data-execution_count="12">
+<div id="c533f8fa" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#betas extracted from our previous MNL regression model</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>beta_0 <span class="op">=</span> <span class="fl">3.2928</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>beta_seat <span class="op">=</span> <span class="fl">0.2307</span></span>
@@ -1141,7 +1141,7 @@ Finally, an increase in <code>price</code> is associated with a decrease in the 
 <span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">7</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">35</span>]   <span class="co"># Minivan F</span></span>
 <span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="c00396c7" class="cell" data-execution_count="13">
+<div id="033ea8ae" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Utility function</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> utility(seats, cargo, eng_elec, eng_hyb, price):</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (beta_0 <span class="op">+</span> beta_seat <span class="op">*</span> seats <span class="op">+</span> beta_cargo <span class="op">*</span> cargo <span class="op">+</span></span>
@@ -1194,7 +1194,7 @@ Minivan F: 7.11%
 </li>
 </ul>
 <p>These percentages represent the predicted market shares for each minivan based on the given model and parameters.</p>
-<div id="2e5c45cf" class="cell" data-execution_count="14">
+<div id="8a3ac73a" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> plt.cm.tab20(<span class="bu">range</span>(<span class="dv">6</span>))</span>
