@@ -26,5 +26,11 @@
   },
   "projects/project4/index.qmd": {
     "index.html": "6565c072"
+  },
+  "visualizations.qmd": {
+    "visualizations.html": "6ee5e98d"
+  },
+  "visualizations/index.qmd": {
+    "index.html": "e8a730f1"
   }
 }

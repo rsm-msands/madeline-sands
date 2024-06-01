@@ -1,0 +1,6 @@
+---
+title: "Sentiment Analysis"
+author: "Madeline Sands"
+date: "2023-12-12"
+callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
+---

@@ -7,5 +7,11 @@
       "/projects/project3/index.html",
       "/projects/project2/index.html"
     ]
+  },
+  {
+    "listing": "/visualizations.html",
+    "items": [
+      "/visualizations/index.html"
+    ]
   }
 ]

@@ -1,0 +1,6 @@
+---
+title: "My Visualizations"
+listing:
+  contents: visualizations
+  type: grid          
+---
