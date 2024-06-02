@@ -4,3 +4,54 @@ author: "Madeline Sands"
 date: "2023-12-12"
 callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
 ---
+
+We wanted to analyze a bit more about the electronics market. I wanted to conduct a sentiment analysis in the electronics brand market on amazon. 
+
+
+In sentinment analysis, 
+
+```{python}
+#import nltk
+#f#rom nltk.probability import FreqDist
+#from nltk.tokenize import RegexpTokenizer
+#from nltk.stem import WordNetLemmatizer
+import string
+#from nltk.corpus import stopwords
+#from nltk.util import ngrams
+import pandas as pd
+import re  # for working with regular expressions
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+lang="english"
+
+import os
+import json
+import gzip
+import pandas as pd
+from urllib.request import urlopen
+
+```
+
+
+
+```{python}
+"""
+# Path to your JSON file
+file_path = 'Data/Electronics_5.json'
+
+# Define chunk size
+chunk_size = 1000  # Adjust this based on your memory constraints
+
+# Create a JsonReader object
+json_reader = pd.read_json(file_path, lines=True, chunksize=chunk_size)
+
+# Initialize an empty DataFrame to hold the concatenated data
+full_df = pd.DataFrame()
+
+# Loop through the JsonReader object and concatenate each chunk
+for chunk in json_reader:
+    full_review = pd.concat([full_df, chunk], ignore_index=True)
+"""
+
+```
