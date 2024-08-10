@@ -2,7 +2,9 @@
 title: "Madeline Sands"
 image: "files/profile_pic.jpg"
 about:
-    template: jolla
+    template: trestles
+    image-width: 15em
+    image-shape: rounded
 
     links:
     - icon: envelope
@@ -12,14 +14,34 @@ about:
     - icon: github
       href: https://github.com/rsm-msands
     
+
 ---
 
-  Madeline is the Senior Data Manager and data analyst at Scientist.com and an aspiring data scientist. She is currently completing her Masters in business analytics at University of California, San Diego - Rady's School of Business. Outside of work she enjoys road and mountain biking, throwing pottery and being outside.
+Madeline is the Senior Data Manager and data analyst at Scientist.com and an aspiring data scientist. She is currently completing her Masters in business analytics at University of California, San Diego - Rady's School of Business. Outside of work she enjoys road and mountain biking, throwing pottery and being outside.
+
+
+## Work Experience
+
+**Senior Data Analyst and Research Concierge** <br>
+&emsp; Scientist.com &emsp; | 2020 - Present| 
+
+**Data Analyst and Category Data Manager**
+<br> &emsp; Scientist.com &emsp; | 2018 - 2020| 
+
 
 ## Education
 
 **Masters of Science in Business Analytics** -- Rady's School of Business -- University of California, San Diego | July 2023 - December 2024
 
 **Bachelors of Science - Analytical Chemistry** -- University of California, Irvine | Sept 2015 - March 2020
+
+## Coding Languages & Experience
+<ul>
+<li> SQL 4+ Years </li>
+<li> Python 3+ Years </li>
+<li> Relational databases </li>
+
+</ul>
+
 
 

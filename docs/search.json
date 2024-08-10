@@ -236,5 +236,19 @@
     "title": "Segmentation: Creating a K Means function",
     "section": "6. Evaluating our custom Kmeans to Built-in function",
     "text": "6. Evaluating our custom Kmeans to Built-in function\nWe are now going to compare our kmeans function to the built in function via sci-kit learn.\n\ndef plot_clusters(data, labels, centroids):\n    # Convert DataFrame to numpy array if necessary\n    if isinstance(data, pd.DataFrame):\n        data = data.values\n    plt.figure(figsize=(10, 8))\n    plt.scatter(data[:, 0], data[:, 1], c=labels, s=50, cmap='viridis', alpha=0.7, label='Cluster Points')\n    plt.scatter(centroids[:, 0], centroids[:, 1], c='red', s=200, marker='X', label='Centroids')\n    plt.title('Cluster Visualization with Centroids')\n    plt.xlabel('Feature 1')\n    plt.ylabel('Feature 2')\n    plt.legend()\n    plt.show()\n\nk = 4\nkmeans = KMeans(n_clusters=k, random_state=0)\nlabels1 = kmeans.fit_predict(penguins_numerical)\ncentroids1 = kmeans.cluster_centers_\nplot_clusters(penguins_numerical, labels1, centroids1)\n\n\n\n\n\n\n\n\n\n# Start the timer\nstart_time = time.time()\n# Create and fit the KMeans model\nkmeans = KMeans(n_clusters=4, random_state=0)\nkmeans.fit(penguins_numerical)\n\n# End the timer\nsklearn_time = time.time() - start_time\nprint(\"Execution Time for Scikit-learn's KMeans: \", sklearn_time)\nprint(\"Execution Time for My k_means: \", my_time)\n\nExecution Time for Scikit-learn's KMeans:  0.005724906921386719\nExecution Time for My k_means:  2.431870937347412\n\n\nWe see that when using the built in kmeans function to our own function, there is no noticeable difference in the classification of the clusters. However, we do see quite a difference in the execution time between my kmeans function and the built-in function. We can see in terms of the execution speed, the built in library still outperforms our own kmeans function."
+  },
+  {
+    "objectID": "index.html#work-experience",
+    "href": "index.html#work-experience",
+    "title": "Madeline Sands",
+    "section": "Work Experience",
+    "text": "Work Experience\nSenior Data Analyst and Research Concierge    Scientist.com   | 2020 - Present|\nData Analyst and Category Data Manager    Scientist.com   | 2018 - 2020|"
+  },
+  {
+    "objectID": "index.html#coding-languages-experience",
+    "href": "index.html#coding-languages-experience",
+    "title": "Madeline Sands",
+    "section": "Coding Languages & Experience",
+    "text": "Coding Languages & Experience\n\n\nSQL 4+ Years\n\n\nPython 3+ Years\n\n\nRelational databases"
   }
 ]
