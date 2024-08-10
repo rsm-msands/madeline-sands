@@ -35,5 +35,11 @@
   },
   "projects/project5/index.qmd": {
     "index.html": "8f1d1459"
+  },
+  "unstructured_data_projects/project1/index.qmd": {
+    "index.html": "26760af9"
+  },
+  "nlp.qmd": {
+    "nlp.html": "6b6fea9c"
   }
 }

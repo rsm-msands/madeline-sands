@@ -15,6 +15,8 @@ website:
         text: Projects 
       - href: visualizations.qmd
         text: Visualizations
+      - href: nlp.qmd
+        text: Natural Language Processing
 
 format:
   html:

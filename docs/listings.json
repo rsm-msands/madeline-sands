@@ -14,5 +14,11 @@
     "items": [
       "/visualizations/index.html"
     ]
+  },
+  {
+    "listing": "/nlp.html",
+    "items": [
+      "/unstructured_data_projects/project1/index.html"
+    ]
   }
 ]

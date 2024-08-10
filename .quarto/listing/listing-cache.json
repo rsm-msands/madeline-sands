@@ -5,6 +5,9 @@
     ],
     "visualizations.qmd": [
       "visualizations"
+    ],
+    "nlp.qmd": [
+      "unstructured_data_projects"
     ]
   }
 }

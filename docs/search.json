@@ -250,5 +250,19 @@
     "title": "Madeline Sands",
     "section": "Coding Languages & Experience",
     "text": "Coding Languages & Experience\n\n\nSQL 4+ Years\n\n\nPython 3+ Years\n\n\nRelational databases"
+  },
+  {
+    "objectID": "unstructured_data_projects/project1/index.html",
+    "href": "unstructured_data_projects/project1/index.html",
+    "title": "Sentiment Analysis",
+    "section": "",
+    "text": "We wanted to analyze a bit more about the electronics market. I wanted to conduct a sentiment analysis in the electronics brand market on amazon.\nIn sentinment analysis,\n\n#import nltk\n#f#rom nltk.probability import FreqDist\n#from nltk.tokenize import RegexpTokenizer\n#from nltk.stem import WordNetLemmatizer\nimport string\n#from nltk.corpus import stopwords\n#from nltk.util import ngrams\nimport pandas as pd\nimport re  # for working with regular expressions\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nlang=\"english\"\n\nimport os\nimport json\nimport gzip\nimport pandas as pd\nfrom urllib.request import urlopen\n\n\n\"\"\"\n# Path to your JSON file\nfile_path = 'Data/Electronics_5.json'\n\n# Define chunk size\nchunk_size = 1000  # Adjust this based on your memory constraints\n\n# Create a JsonReader object\njson_reader = pd.read_json(file_path, lines=True, chunksize=chunk_size)\n\n# Initialize an empty DataFrame to hold the concatenated data\nfull_df = pd.DataFrame()\n\n# Loop through the JsonReader object and concatenate each chunk\nfor chunk in json_reader:\n    full_review = pd.concat([full_df, chunk], ignore_index=True)\n\"\"\"\n\n\"\\n# Path to your JSON file\\nfile_path = 'Data/Electronics_5.json'\\n\\n# Define chunk size\\nchunk_size = 1000  # Adjust this based on your memory constraints\\n\\n# Create a JsonReader object\\njson_reader = pd.read_json(file_path, lines=True, chunksize=chunk_size)\\n\\n# Initialize an empty DataFrame to hold the concatenated data\\nfull_df = pd.DataFrame()\\n\\n# Loop through the JsonReader object and concatenate each chunk\\nfor chunk in json_reader:\\n    full_review = pd.concat([full_df, chunk], ignore_index=True)\\n\""
+  },
+  {
+    "objectID": "nlp.html",
+    "href": "nlp.html",
+    "title": "Unstructured Data Projects",
+    "section": "",
+    "text": "Sentiment Analysis\n\n\n\n\n\n\nMadeline Sands\n\n\nDec 12, 2023\n\n\n\n\n\n\n\n\nNo matching items"
   }
 ]
