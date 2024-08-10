@@ -14,7 +14,7 @@ about:
     
 ---
 
-  Madeline is the Senior Data Manager and Analyst at Scientist.com and an aspiring Data Scientist. She is currently completing her Masters in Business Analytics at University of California, San Diego - Rady's School of Business. Outside of work she enjoys road and mountain biking, throwing pottery and being outside.
+  Madeline is the Senior Data Manager and data analyst at Scientist.com and an aspiring data scientist. She is currently completing her Masters in business analytics at University of California, San Diego - Rady's School of Business. Outside of work she enjoys road and mountain biking, throwing pottery and being outside.
 
 ## Education
 
