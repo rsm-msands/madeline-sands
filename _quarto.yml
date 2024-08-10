@@ -4,6 +4,7 @@ project:
 
 website:
   title: "Madeline Sands"
+  favicon: files/favicon-32x32.png
   navbar:
     left:
       - href: index.qmd
