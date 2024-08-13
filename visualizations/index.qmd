@@ -30,7 +30,6 @@ import json
 import gzip
 import pandas as pd
 from urllib.request import urlopen
-
 ```
 
 
@@ -53,5 +52,4 @@ full_df = pd.DataFrame()
 for chunk in json_reader:
     full_review = pd.concat([full_df, chunk], ignore_index=True)
 """
-
 ```
