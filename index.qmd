@@ -3,8 +3,8 @@ title: "Madeline Sands"
 image: "files/profile_pic.jpg"
 about:
     template: trestles
-    image-width: 15em
-    image-shape: rounded
+    image-width: 17em
+    image-shape: round
 
     links:
     - icon: envelope
@@ -12,34 +12,35 @@ about:
     - icon: linkedin
       href: https://www.linkedin.com/in/madeline-sands
     - icon: github
-      href: https://github.com/rsm-msands
-    
-
+      href: https://github.com/rsm-msands 
 ---
 
-Madeline is the Senior Data Manager and data analyst at Scientist.com and an aspiring data scientist. She is currently completing her Masters in business analytics at University of California, San Diego - Rady's School of Business. Outside of work she enjoys road and mountain biking, throwing pottery and being outside.
+<div class = 'bio_section'> Hi! I am a Senior Data Manager and Data Analyst at Scientist.com and an aspiring Data Scientist. I am currently completing my Masters in Business Analytics at University of California, San Diego - Rady's School of Business. Outside of work I enjoys road and mountain biking, surfing, and throwing pottery. Please use the nav bar above to check out some of my current projects! 
+</div>
 
-
-## Work Experience
+### Work Experience
 
 **Senior Data Analyst and Research Concierge** <br>
-&emsp; Scientist.com &emsp; | 2020 - Present| 
+&emsp; Scientist.com, &emsp; 2020 - Present
 
 **Data Analyst and Category Data Manager**
-<br> &emsp; Scientist.com &emsp; | 2018 - 2020| 
+<br> &emsp; Scientist.com, &emsp; 2018 - 2020
 
 
-## Education
+### Education
 
-**Masters of Science in Business Analytics** -- Rady's School of Business -- University of California, San Diego | July 2023 - December 2024
+**Masters of Science in Business Analytics** 
+<br> &emsp; Rady's School of Business
+<br> &emsp; University of California, San Diego, 2023 - 2024
 
-**Bachelors of Science - Analytical Chemistry** -- University of California, Irvine | Sept 2015 - March 2020
+**Bachelors of Science - Analytical Chemistry** 
+<br> &emsp; University of California, Irvine, 2015 - 2020
 
-## Coding Languages & Experience
+### Coding Languages & Experience
 <ul>
-<li> SQL 4+ Years </li>
-<li> Python 3+ Years </li>
-<li> Relational databases </li>
+<li> SQL  - 4+ Years </li>
+<li> Python  - 3+ Years </li>
+<li> Relational databases  - 3+ Years </li>
 
 </ul>
 

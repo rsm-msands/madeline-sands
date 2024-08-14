@@ -195,51 +195,225 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>We wanted to analyze a bit more about the electronics market. I wanted to conduct a sentiment analysis in the electronics brand market on amazon.</p>
 <p>In sentinment analysis,</p>
-<div id="9d28e91b" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import nltk</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#f#rom nltk.probability import FreqDist</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#from nltk.tokenize import RegexpTokenizer</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#from nltk.stem import WordNetLemmatizer</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#from nltk.corpus import stopwords</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#from nltk.util import ngrams</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re  <span class="co"># for working with regular expressions</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>lang<span class="op">=</span><span class="st">"english"</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gzip</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib.request <span class="im">import</span> urlopen</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="07c6bc61" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.probability <span class="im">import</span> FreqDist</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize, RegexpTokenizer</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.stem <span class="im">import</span> WordNetLemmatizer, PorterStemmer</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords, wordnet</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.util <span class="im">import</span> ngrams</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.sentiment.vader <span class="im">import</span> SentimentIntensityAnalyzer</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> textblob <span class="im">import</span> TextBlob</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>vader <span class="op">=</span> SentimentIntensityAnalyzer()</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>lang<span class="op">=</span><span class="st">"english"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="457b0042" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Path to your JSON file</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">file_path = 'Data/Electronics_5.json'</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define chunk size</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">chunk_size = 1000  # Adjust this based on your memory constraints</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a JsonReader object</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">json_reader = pd.read_json(file_path, lines=True, chunksize=chunk_size)</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize an empty DataFrame to hold the concatenated data</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">full_df = pd.DataFrame()</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop through the JsonReader object and concatenate each chunk</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">for chunk in json_reader:</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">    full_review = pd.concat([full_df, chunk], ignore_index=True)</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>"\n# Path to your JSON file\nfile_path = 'Data/Electronics_5.json'\n\n# Define chunk size\nchunk_size = 1000  # Adjust this based on your memory constraints\n\n# Create a JsonReader object\njson_reader = pd.read_json(file_path, lines=True, chunksize=chunk_size)\n\n# Initialize an empty DataFrame to hold the concatenated data\nfull_df = pd.DataFrame()\n\n# Loop through the JsonReader object and concatenate each chunk\nfor chunk in json_reader:\n    full_review = pd.concat([full_df, chunk], ignore_index=True)\n"</code></pre>
+<div id="7dee9676" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Downloading the needed nltk data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'punkt'</span>) <span class="co"># only run this once</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'stopwords'</span>) <span class="co"># only run this once</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'wordnet'</span>) <span class="co"># only run this once</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'omw-1.4'</span>)<span class="co"># only run this once</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">"vader.lexicon"</span>)<span class="co"># only run this once</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[nltk_data] Downloading package punkt to
+[nltk_data]     /Users/madelinesands/nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package stopwords to
+[nltk_data]     /Users/madelinesands/nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!
+[nltk_data] Downloading package wordnet to
+[nltk_data]     /Users/madelinesands/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to
+[nltk_data]     /Users/madelinesands/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!
+[nltk_data] Error loading vader.lexicon: Package 'vader.lexicon' not
+[nltk_data]     found in index</code></pre>
 </div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>False</code></pre>
+</div>
+</div>
+<div id="9237f633" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#reading in the yelp review data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>yelp <span class="op">=</span> pd.read_csv(<span class="st">'data/yelp.csv'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(yelp.info())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 10000 entries, 0 to 9999
+Data columns (total 10 columns):
+ #   Column       Non-Null Count  Dtype 
+---  ------       --------------  ----- 
+ 0   business_id  10000 non-null  object
+ 1   date         10000 non-null  object
+ 2   review_id    10000 non-null  object
+ 3   stars        10000 non-null  int64 
+ 4   text         10000 non-null  object
+ 5   type         10000 non-null  object
+ 6   user_id      10000 non-null  object
+ 7   cool         10000 non-null  int64 
+ 8   useful       10000 non-null  int64 
+ 9   funny        10000 non-null  int64 
+dtypes: int64(4), object(6)
+memory usage: 781.4+ KB
+None</code></pre>
+</div>
+</div>
+<p>We have about 10,000 rows of yelp review text data that we are going to analyze for key words and commonality among reviews.</p>
+<p>First, I am pulling out the year and month from the <code>date</code> column and creating 2 new columns <code>reviewYear</code> and <code>reviewMonth</code> respectively. This will allow me to see if there are any chronological changes in the usage of different words and also the change in sentiment over time.</p>
+<div id="18cf3ade" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"date_column"</span>] <span class="op">=</span> pd.to_datetime(yelp[<span class="st">"date"</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"year"</span>] <span class="op">=</span> yelp[<span class="st">"date_column"</span>].dt.year</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"month"</span>] <span class="op">=</span> yelp[<span class="st">"date_column"</span>].dt.month</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"day"</span>] <span class="op">=</span> yelp[<span class="st">"date_column"</span>].dt.month</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"day_of_week"</span>] <span class="op">=</span> yelp[<span class="st">"date_column"</span>].dt.day_name()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now I want to visualize some descriptive analytics to see what is present in the database.</p>
+<div id="77958a40" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> [<span class="dv">13</span>, <span class="dv">7</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>color <span class="op">=</span> plt.cm.viridis(np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">5</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>fig, (ax, ax2) <span class="op">=</span> plt.subplots(ncols<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#One Graph for the Top Yelp Reviews of All Time</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">'user_id'</span>].value_counts().head().plot(kind<span class="op">=</span><span class="st">'bar'</span>, color <span class="op">=</span> color, ax<span class="op">=</span>ax, title<span class="op">=</span><span class="st">'Top Yelp Reviewers (All Time)'</span>)<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"User ID"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Count of user submitted reviews"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#One Graph for the Users who leave only one review (we expect this to be more)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">'user_id'</span>].value_counts(ascending<span class="op">=</span><span class="va">True</span>).head().plot(kind<span class="op">=</span><span class="st">'bar'</span>, color <span class="op">=</span> color, ax<span class="op">=</span>ax2, title<span class="op">=</span><span class="st">'Users who left only a couple of yelp reviews'</span>)<span class="op">;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">"User ID"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Count of user submitted reviews"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>Text(0, 0.5, 'Count of user submitted reviews')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-6-output-2.png" width="1031" height="777" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the graph above, we can see that there are a couple of “power” users who have left a much larger number of yelp reviews, between 20-35. However,the majority of users only leave about 1 -2 reviews. The average review number is 1.56.</p>
+<div id="35a09c40" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>user_counts <span class="op">=</span> yelp[<span class="st">"user_id"</span>].value_counts()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>user_counts <span class="op">=</span>  user_counts.to_frame()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>user_count_average <span class="op">=</span> user_counts[<span class="st">"count"</span>].mean()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(user_count_average.<span class="bu">round</span>(<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1.56</code></pre>
+</div>
+</div>
+<p>From the histogram below we are able to visualize the same occurrence that we see in graph 1. There are a couple of <strong>power users</strong> who have submitted more than 5 yelp reviews, but the majority of Yelp users in this database have only submitted 1-2 reviews.</p>
+<div id="7100a0ef" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>plt.hist(user_counts, bins<span class="op">=</span><span class="dv">50</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>, color<span class="op">=</span> <span class="st">"purple"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, density<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Graph 2: Histogram of Yelp Review Frequencies'</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.axvline(user_count_average, color <span class="op">=</span> <span class="st">'blue'</span>, linestyle <span class="op">=</span> <span class="st">'dashed'</span>, linewidth <span class="op">=</span> <span class="dv">2</span>, label <span class="op">=</span> <span class="st">"Average Review Number"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of Yelp Reviews'</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper right'</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Probability Density'</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-8-output-1.png" width="1035" height="597" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="6588e911" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>yelp.groupby(<span class="st">"year"</span>)[<span class="st">"year"</span>].value_counts().plot(kind<span class="op">=</span><span class="st">'bar'</span>, color<span class="op">=</span>color, title<span class="op">=</span><span class="st">' Number of Yelp Reviews per Year'</span>).<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">'Year'</span>, ylabel<span class="op">=</span><span class="st">'Count of Yelp Reviews'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-9-output-1.png" width="1048" height="618" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="tokeninzing-the-input-database-specifically-the-text-column" class="level4">
+<h4 class="anchored" data-anchor-id="tokeninzing-the-input-database-specifically-the-text-column">Tokeninzing the input database, specifically the ‘text’ column</h4>
+<p>Before we can begin any heavy analysis on the texts, we want to conduct some text preprocessing steps. Part of the preprocessing stage involves lowercasing the text and removing any punctuation. This allows us to easily remove any contractions that might be in the text and pull them out for proper analysis.</p>
+<div id="e9d36a9b" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#first want to lowercase all of the text</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"text_list"</span>] <span class="op">=</span> yelp[<span class="st">"text"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.lower())</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#want to remove all the punctuation</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"text_list"</span>] <span class="op">=</span> yelp[<span class="st">"text_list"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: re.sub(<span class="vs">r'[^\w\s]'</span>,<span class="st">''</span>,x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Below is the contraction dictionary I started to make to clean up the yelp reviews text. In addition to this, I will also be putting in common slang terms to clean them up. These are terms such as “u” for “you”, “r” for “are”, “n” for “and”, etc.</p>
+<div id="f69b5e16" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Contraction dictionary to transform the contractions into their unconjugated form. </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>contractions_dict <span class="op">=</span> {</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"i'm"</span>: <span class="st">"i am"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"didnt"</span>: <span class="st">"did not"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ive"</span>: <span class="st">"i have"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dont"</span>: <span class="st">"do not"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"wasnt"</span>: <span class="st">"was not"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"werent"</span>: <span class="st">"were not"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"shouldnt"</span>: <span class="st">"should not"</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"wouldnt"</span>: <span class="st">"would not"</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"couldnt"</span>: <span class="st">"could not"</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"isnt"</span>: <span class="st">"is not"</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"arent"</span>: <span class="st">"are not"</span>,</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hasnt"</span>: <span class="st">"has not"</span>,</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"havent"</span>: <span class="st">"have not"</span>,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hadnt"</span>: <span class="st">"had not"</span>,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"wont"</span>: <span class="st">"will not"</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"youre"</span>: <span class="st">"you are"</span>,</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"theyre"</span>: <span class="st">"they are"</span>,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"youve"</span>: <span class="st">"you have"</span>,</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"theyve"</span>: <span class="st">"they have"</span>,</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"weve"</span>: <span class="st">"we have"</span>,</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"itll"</span>: <span class="st">"it will"</span>,</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"u"</span>: <span class="st">"you"</span>,</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ur"</span>: <span class="st">"your"</span>,</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"r"</span>: <span class="st">"are"</span>,</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"im"</span>: <span class="st">"i am"</span>,</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"thats"</span>: <span class="st">"that is"</span>,</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"whats"</span>: <span class="st">"what is"</span>,</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lets"</span>: <span class="st">"let us"</span>,</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"n"</span>: <span class="st">"and"</span>, </span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"doesnt"</span>: <span class="st">"does not"</span>,</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"cant"</span>: <span class="st">"can not"</span>,</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"couldve"</span>: <span class="st">"could have"</span>,</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"shouldve"</span>: <span class="st">"should have"</span>,</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"wouldve"</span>: <span class="st">"would have"</span>,</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mustve"</span>: <span class="st">"must have"</span>,</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"youll"</span>: <span class="st">"you will"</span>,</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"theyll"</span>: <span class="st">"they will"</span>,</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1"</span> : <span class="st">"one"</span>, </span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">"2"</span>: <span class="st">"two"</span>,</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"3"</span>: <span class="st">"three"</span>,</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">"4"</span>: <span class="st">"four"</span>,</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"5"</span>: <span class="st">"five"</span>,</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"10"</span>: <span class="st">"ten"</span></span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"text_list_tokens"</span>] <span class="op">=</span> yelp[<span class="st">"text_list"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: word_tokenize(x))</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"text_list"</span>] <span class="op">=</span> yelp[<span class="st">"text_list_tokens"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x:<span class="st">' '</span>.join(contractions_dict[word] <span class="cf">if</span> word <span class="kw">in</span> contractions_dict <span class="cf">else</span> word <span class="cf">for</span> word <span class="kw">in</span> x))</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"text_string"</span>] <span class="op">=</span> yelp[<span class="st">"text_list"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x:<span class="st">''</span>.join(x))</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>lemmatizer <span class="op">=</span> WordNetLemmatizer()</span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>yelp[<span class="st">"text_string"</span>]<span class="op">=</span> yelp[<span class="st">"text_string"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: [lemmatizer.lemmatize(word, wordnet.VERB) <span class="cf">for</span> word <span class="kw">in</span> x.split()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Based on some inital analysis, I decided to go in and add some additional stop words to the stop word list.</p>
+<div id="ab39fd79" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>stop_words <span class="op">=</span> <span class="bu">set</span>(stopwords.words(<span class="st">"english"</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>custom__stopwords <span class="op">=</span> {<span class="st">'also'</span>, <span class="st">'try'</span>,<span class="st">'make'</span>, <span class="st">'like'</span>, <span class="st">'take'</span>, <span class="st">'go'</span>, <span class="st">'get'</span>, <span class="st">'would'</span>,<span class="st">'eat'</span>,<span class="st">'two'</span>,<span class="st">'always'</span>,<span class="st">'next'</span>, <span class="st">'door'</span>, <span class="st">'last'</span>, <span class="st">'night'</span>,<span class="st">'right'</span>,<span class="st">'still'</span>,<span class="st">'one'</span>,<span class="st">'first'</span>,<span class="st">'use'</span>,<span class="st">'second'</span>,<span class="st">'new'</span>,<span class="st">'three'</span>,<span class="st">'love'</span>,<span class="st">'ask'</span>,<span class="st">'see'</span>,<span class="st">'way'</span>,<span class="st">'work'</span>,<span class="st">'need'</span>, <span class="st">'lot'</span>, <span class="st">'better'</span>,<span class="st">'find'</span>, <span class="st">'great'</span>,<span class="st">'little'</span>, <span class="st">'say'</span>, <span class="st">'food'</span>,<span class="st">'best'</span>, <span class="st">'us'</span>,<span class="st">'give'</span>,<span class="st">'pretty'</span>,<span class="st">'back'</span>,<span class="st">'couple'</span>,<span class="st">'weeks'</span>,<span class="st">'ago'</span>, <span class="st">'know'</span>, <span class="st">'truth'</span>,<span class="st">'nice'</span>,<span class="st">'come'</span>,<span class="st">'could'</span>,<span class="st">'make'</span>,<span class="st">'order'</span>, <span class="st">'time'</span>, <span class="st">'even'</span>, <span class="st">'though'</span>, <span class="st">'much'</span>, <span class="st">'got'</span>, <span class="st">'place'</span>, <span class="st">'think'</span>,<span class="st">'go'</span>, <span class="st">'really'</span>, <span class="st">'well'</span>, <span class="st">'look'</span>, <span class="st">'want'</span>}</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>stop_words.update(custom__stopwords)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

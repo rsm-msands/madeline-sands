@@ -1,4 +1,5 @@
 /* css styles */
+
 .tooltip {
     position: relative;
     display: inline-block;
@@ -26,3 +27,33 @@
     visibility: visible;
     opacity: 100;
   }
+
+/* Style the bio section */
+.bio-section {
+  margin-top: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.bio-section img {
+  margin-bottom: 15px;
+}
+
+.bio-section a {
+  color: #007bff;
+}
+
+.bio-section a:hover {
+  text-decoration: underline;
+}
+
+/* Optional: center or align the content */
+.bio-section {
+  text-align: left;
+}
+.quarto-about {
+  padding-left: 5px; /* Decrease this value for less padding */
+  padding-right: 5px; /* Decrease this value for less padding */
+  margin-left: 10px;  /* Adjust this value for more or less margin */
+  margin-right: 10px; /* Adjust this value for more or less margin */
+}
